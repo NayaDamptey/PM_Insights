@@ -1,0 +1,112 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "4ae0b6cb81a1e7c9c582",
+  "position": {
+    "x": 650.66666666666663,
+    "y": 318,
+    "z": 0,
+    "height": 367.5,
+    "width": 618.66666666666663,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "barChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_repair_job"
+                    }
+                  },
+                  "Property": "fault_category"
+                }
+              },
+              "queryRef": "fact_repair_job.fault_category",
+              "nativeQueryRef": "fault_category",
+              "active": true
+            }
+          ]
+        },
+        "Series": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_repair_job"
+                    }
+                  },
+                  "Property": "issue_type"
+                }
+              },
+              "queryRef": "fact_repair_job.issue_type",
+              "nativeQueryRef": "issue_type"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_repair_job"
+                    }
+                  },
+                  "Property": "Jobs Open Over 15 Days"
+                }
+              },
+              "queryRef": "fact_repair_job.Jobs Open Over 15 Days",
+              "nativeQueryRef": "Jobs Open Over 15 Days"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "labels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Jobs open over 15 days: what kind (Planned = compliance)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

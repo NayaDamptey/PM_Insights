@@ -1,0 +1,154 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "8efb7f1cdf5e0dfaa792",
+  "position": {
+    "x": 1386.4421052631578,
+    "y": 249.6,
+    "z": 0,
+    "height": 384,
+    "width": 513.34736842105258,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "lineChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_date"
+                    }
+                  },
+                  "Property": "year"
+                }
+              },
+              "queryRef": "dim_date.year",
+              "nativeQueryRef": "year",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_tenancy"
+                    }
+                  },
+                  "Property": "Homes Acquired (cumulative)"
+                }
+              },
+              "queryRef": "fact_tenancy.Homes Acquired (cumulative)",
+              "nativeQueryRef": "Homes Acquired (cumulative)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_tenancy"
+                    }
+                  },
+                  "Property": "Homes Projected"
+                }
+              },
+              "queryRef": "fact_tenancy.Homes Projected",
+              "nativeQueryRef": "Homes Projected"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "labels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Homes owned and path to 30,000 by 2030'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "926303405657a1cdaa2e",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "dim_date"
+              }
+            },
+            "Property": "year"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "fa6d72054dcc2147d4c1",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fact_tenancy"
+              }
+            },
+            "Property": "Homes Acquired (cumulative)"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "6080ecca3424d71a401e",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fact_tenancy"
+              }
+            },
+            "Property": "Homes Projected"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

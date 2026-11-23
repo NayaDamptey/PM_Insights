@@ -1,0 +1,130 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "6f9181d8bf6b7308ae77",
+  "position": {
+    "x": 966,
+    "y": 697.5,
+    "z": 0,
+    "height": 367.5,
+    "width": 934,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "drillFilterOtherVisuals": true,
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_staff"
+                    }
+                  },
+                  "Property": "full_name"
+                }
+              },
+              "queryRef": "dim_staff.full_name",
+              "nativeQueryRef": "full_name"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_lettings_funnel"
+                    }
+                  },
+                  "Property": "Viewings Booked"
+                }
+              },
+              "queryRef": "fact_lettings_funnel.Viewings Booked",
+              "nativeQueryRef": "Viewings Booked"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_lettings_funnel"
+                    }
+                  },
+                  "Property": "Offers Made"
+                }
+              },
+              "queryRef": "fact_lettings_funnel.Offers Made",
+              "nativeQueryRef": "Offers Made"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_lettings_funnel"
+                    }
+                  },
+                  "Property": "Lets Agreed"
+                }
+              },
+              "queryRef": "fact_lettings_funnel.Lets Agreed",
+              "nativeQueryRef": "Lets Agreed"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_lettings_funnel"
+                    }
+                  },
+                  "Property": "Viewing to Offer %"
+                }
+              },
+              "queryRef": "fact_lettings_funnel.Viewing to Offer %",
+              "nativeQueryRef": "Viewing to Offer %"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_lettings_funnel"
+                    }
+                  },
+                  "Property": "Avg Days to Agree"
+                }
+              },
+              "queryRef": "fact_lettings_funnel.Avg Days to Agree",
+              "nativeQueryRef": "Avg Days to Agree"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Negotiators'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

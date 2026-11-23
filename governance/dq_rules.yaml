@@ -1,0 +1,783 @@
+# Data quality rules for the Silver layer (ll_silver), run by the 03_dq notebook.
+#
+# Each rule: id, name, dimension, severity, owner, table, column, check (+ its settings).
+# After editing, run `python -m fabric.build_notebooks` so the notebook picks the rules up.
+#
+# Checks:
+#   primary_key     key columns unique and not blank            (table: all = every Silver table)
+#   foreign_key     every dictionary link resolves               (table: all = every link)
+#   type_converts   values Silver could not convert to the dictionary type (from _cast_errors)
+#   not_null        listed columns are filled
+#   pattern         values match a regular expression (blank values are not checked)
+#   allowed_values  values are in a fixed list
+#   range           numbers between min and max
+#   date_window     dates between min and today
+#   freshness       newest value of a timestamp/date column is recent enough
+#   sql             a query returning record_key, column_name, detail for every failing row;
+#                   checked_sql (optional) counts the records checked
+#
+# In sql checks, {db} is replaced by the Silver lakehouse name.
+# "Live" tenancy = tenancy_status Active or Periodic.
+
+domains:
+  Housing management:
+    owner: Head of Housing Management
+    steward: Housing data steward
+    tables: [silver_property, silver_block, silver_tenancy, silver_tenancy_tenant, silver_tenant,
+             silver_ownership, silver_landlord]
+  Finance:
+    owner: Head of Finance
+    steward: Finance systems analyst
+    tables: [silver_rent_transaction, silver_income_category, silver_suspense_item,
+             silver_purchase_invoice]
+  Repairs:
+    owner: Head of Repairs and Maintenance
+    steward: Repairs coordinator
+    tables: [silver_repair_issue, silver_repair_job, silver_repair_quote, silver_supplier]
+  Compliance:
+    owner: Compliance Manager
+    steward: Compliance administrator
+    tables: [silver_compliance_certificate]
+  Lettings and sales:
+    owner: Head of Lettings and Sales
+    steward: Lettings administrator
+    tables: [silver_applicant, silver_listing, silver_viewing, silver_offer]
+  People:
+    owner: HR Manager
+    steward: HR systems administrator
+    tables: [silver_staff]
+  Reference data:
+    owner: Head of Data
+    steward: Data steward
+    tables: [silver_calendar]
+
+rules:
+  # ---------------------------------------------------------------- uniqueness
+  - id: DQ001
+    name: Primary key is unique and not blank
+    dimension: uniqueness
+    severity: high
+    owner: table owner
+    table: all
+    column: key
+    check: primary_key
+
+  - id: DQ010
+    name: No duplicate properties (same address and postcode on two records)
+    dimension: uniqueness
+    severity: high
+    owner: Head of Housing Management
+    table: silver_property
+    column: address_line1, address_line2, postcode
+    check: sql
+    sql: |
+      SELECT property_ref AS record_key,
+             'address_line1, postcode' AS column_name,
+             concat('same address as ', n - 1, ' other record(s): ',
+                    concat_ws(', ', address_line1, address_line2, postcode),
+                    ' (status ', property_status, ')') AS detail
+      FROM (
+          SELECT p.*,
+                 COUNT(*) OVER (PARTITION BY upper(trim(address_line1)),
+                                             upper(trim(coalesce(address_line2, ''))),
+                                             upper(replace(postcode, ' ', ''))) AS n
+          FROM {db}.silver_property p
+          WHERE address_line1 IS NOT NULL AND postcode IS NOT NULL
+      ) x
+      WHERE n > 1
+
+  - id: DQ011
+    name: A mobile number belongs to one tenant only
+    dimension: uniqueness
+    severity: medium
+    owner: Head of Housing Management
+    table: silver_tenant
+    column: mobile
+    check: sql
+    sql: |
+      SELECT tenant_ref AS record_key, 'mobile' AS column_name,
+             concat('mobile ', mobile, ' is on ', n, ' tenant records') AS detail
+      FROM (
+          SELECT tenant_ref, mobile,
+                 COUNT(*) OVER (PARTITION BY replace(mobile, ' ', '')) AS n
+          FROM {db}.silver_tenant
+          WHERE mobile IS NOT NULL
+      ) x
+      WHERE n > 1
+
+  - id: DQ012
+    name: At most one accepted offer per listing
+    dimension: uniqueness
+    severity: high
+    owner: Head of Lettings and Sales
+    table: silver_offer
+    column: offer_status
+    check: sql
+    sql: |
+      SELECT offer_id AS record_key, 'offer_status' AS column_name,
+             concat('listing ', listing_id, ' has ', n, ' accepted offers') AS detail
+      FROM (
+          SELECT offer_id, listing_id, COUNT(*) OVER (PARTITION BY listing_id) AS n
+          FROM {db}.silver_offer
+          WHERE offer_status = 'Accepted'
+      ) x
+      WHERE n > 1
+
+  # ---------------------------------------------------------- referential integrity
+  - id: DQ002
+    name: Every link in the data dictionary points at an existing record
+    dimension: referential integrity
+    severity: high
+    owner: table owner
+    table: all
+    column: foreign keys
+    check: foreign_key
+
+  # ------------------------------------------------------------------ completeness
+  - id: DQ020
+    name: Mandatory property fields are filled
+    dimension: completeness
+    severity: high
+    owner: Head of Housing Management
+    table: silver_property
+    column: address_line1, town, postcode, region, property_type, tenure, department, property_status, manager_staff_code, acquisition_date
+    check: not_null
+    columns: [address_line1, town, postcode, region, property_type, tenure, department,
+              property_status, manager_staff_code, acquisition_date]
+
+  - id: DQ021
+    name: Mandatory tenancy fields are filled
+    dimension: completeness
+    severity: high
+    owner: Head of Housing Management
+    table: silver_tenancy
+    column: property_ref, lead_tenant_ref, tenancy_type, tenancy_status, start_date, rent_pcm
+    check: not_null
+    columns: [property_ref, lead_tenant_ref, tenancy_type, tenancy_status, start_date, rent_pcm]
+
+  - id: DQ022
+    name: Mandatory rent ledger fields are filled (incl. a known transaction type)
+    dimension: completeness
+    severity: high
+    owner: Head of Finance
+    table: silver_rent_transaction
+    column: tenancy_ref, property_ref, transaction_date, period_month, transaction_type, transaction_group, amount
+    check: not_null
+    columns: [tenancy_ref, property_ref, transaction_date, period_month, transaction_type,
+              transaction_group, amount]
+
+  - id: DQ023
+    name: Tenants have a first and last name
+    dimension: completeness
+    severity: medium
+    owner: Head of Housing Management
+    table: silver_tenant
+    column: first_name, last_name
+    check: not_null
+    columns: [first_name, last_name]
+
+  - id: DQ024
+    name: Certificates have type, dates and outcome
+    dimension: completeness
+    severity: high
+    owner: Compliance Manager
+    table: silver_compliance_certificate
+    column: property_ref, certificate_type, issue_date, expiry_date, outcome
+    check: not_null
+    columns: [property_ref, certificate_type, issue_date, expiry_date, outcome]
+
+  - id: DQ025
+    name: Repair issues have a property, status and reported date
+    dimension: completeness
+    severity: medium
+    owner: Head of Repairs and Maintenance
+    table: silver_repair_issue
+    column: property_ref, status, created_at
+    check: not_null
+    columns: [property_ref, status, created_at]
+
+  # ---------------------------------------------------------------------- validity
+  - id: DQ003
+    name: Values convert to their dictionary type
+    dimension: validity
+    severity: high
+    owner: table owner
+    table: all
+    column: typed columns
+    check: type_converts
+
+  - id: DQ030
+    name: Tenant email is a valid email address
+    dimension: validity
+    severity: medium
+    owner: Head of Housing Management
+    table: silver_tenant
+    column: email
+    check: pattern
+    regex: '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
+
+  - id: DQ031
+    name: Applicant email is a valid email address
+    dimension: validity
+    severity: low
+    owner: Head of Lettings and Sales
+    table: silver_applicant
+    column: email
+    check: pattern
+    regex: '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
+
+  - id: DQ032
+    name: Staff email is a valid email address
+    dimension: validity
+    severity: medium
+    owner: HR Manager
+    table: silver_staff
+    column: email
+    check: pattern
+    regex: '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'
+
+  - id: DQ033
+    name: Property postcode is a valid UK postcode
+    dimension: validity
+    severity: medium
+    owner: Head of Housing Management
+    table: silver_property
+    column: postcode
+    check: pattern
+    regex: '^[A-Z]{1,2}[0-9][A-Z0-9]? ?[0-9][A-Z]{2}$'
+
+  - id: DQ034
+    name: Tenant mobile is a valid UK mobile number
+    dimension: validity
+    severity: low
+    owner: Head of Housing Management
+    table: silver_tenant
+    column: mobile
+    check: pattern
+    regex: '^(07[0-9]{3} ?[0-9]{6}|\+44 ?7[0-9]{3} ?[0-9]{6})$'
+
+  - id: DQ035
+    name: Applicant mobile is a valid UK mobile number
+    dimension: validity
+    severity: low
+    owner: Head of Lettings and Sales
+    table: silver_applicant
+    column: mobile
+    check: pattern
+    regex: '^(07[0-9]{3} ?[0-9]{6}|\+44 ?7[0-9]{3} ?[0-9]{6})$'
+
+  - id: DQ036
+    name: Tenancy status is a known value
+    dimension: validity
+    severity: high
+    owner: Head of Housing Management
+    table: silver_tenancy
+    column: tenancy_status
+    check: allowed_values
+    values: [Active, Periodic, Renewed, Ended]
+
+  - id: DQ037
+    name: Property status is a known value
+    dimension: validity
+    severity: high
+    owner: Head of Housing Management
+    table: silver_property
+    column: property_status
+    check: allowed_values
+    values: [Let, Void, Sold]
+
+  - id: DQ038
+    name: Tenure is a known value
+    dimension: validity
+    severity: high
+    owner: Head of Housing Management
+    table: silver_property
+    column: tenure
+    check: allowed_values
+    values: [PRS, Shared Ownership, Open Market Sale]
+
+  - id: DQ039
+    name: Repair issue status is a FixFlo status
+    dimension: validity
+    severity: medium
+    owner: Head of Repairs and Maintenance
+    table: silver_repair_issue
+    column: status
+    check: allowed_values
+    values: [Reported, JobAwarded, AwaitingJobCompletion, JobCompleted, Closed]
+
+  - id: DQ040
+    name: Certificate type is a known value
+    dimension: validity
+    severity: high
+    owner: Compliance Manager
+    table: silver_compliance_certificate
+    column: certificate_type
+    check: allowed_values
+    values: [Gas Safety Certificate, EICR, EPC]
+
+  - id: DQ041
+    name: Transaction type is a known value
+    dimension: validity
+    severity: high
+    owner: Head of Finance
+    table: silver_rent_transaction
+    column: transaction_type
+    check: allowed_values
+    values: [Rent charge, Service charge, Ground rent, Tenant recharge invoice, Receipt,
+             Deposit received, Deposit returned, Deposit deduction]
+
+  - id: DQ042
+    name: Ownership share is between 0 and 100%
+    dimension: validity
+    severity: high
+    owner: Head of Housing Management
+    table: silver_ownership
+    column: percentage_share
+    check: range
+    min: 0
+    max: 100
+
+  - id: DQ043
+    name: Shared Ownership share on the tenancy is between 0 and 100%
+    dimension: validity
+    severity: high
+    owner: Head of Housing Management
+    table: silver_tenancy
+    column: ownership_share_pct
+    check: range
+    min: 0
+    max: 100
+
+  - id: DQ044
+    name: Monthly rent is above zero and not implausibly high (over £10,000)
+    dimension: validity
+    severity: high
+    owner: Head of Finance
+    table: silver_tenancy
+    column: rent_pcm
+    check: range
+    min: 0.01
+    max: 10000
+
+  - id: DQ045
+    name: Transaction dates are between Jan 2021 and today
+    dimension: validity
+    severity: high
+    owner: Head of Finance
+    table: silver_rent_transaction
+    column: transaction_date
+    check: date_window
+    columns: [transaction_date]
+    min: '2021-01-01'
+
+  - id: DQ046
+    name: Tenancy start dates are between Jan 2021 and today
+    dimension: validity
+    severity: medium
+    owner: Head of Housing Management
+    table: silver_tenancy
+    column: start_date
+    check: date_window
+    columns: [start_date]
+    min: '2021-01-01'
+
+  - id: DQ047
+    name: Acquisition dates are between Jan 2021 and today
+    dimension: validity
+    severity: medium
+    owner: Head of Housing Management
+    table: silver_property
+    column: acquisition_date
+    check: date_window
+    columns: [acquisition_date]
+    min: '2021-01-01'
+
+  - id: DQ048
+    name: Certificate issue dates are between Jan 2021 and today
+    dimension: validity
+    severity: high
+    owner: Compliance Manager
+    table: silver_compliance_certificate
+    column: issue_date
+    check: date_window
+    columns: [issue_date]
+    min: '2021-01-01'
+
+  - id: DQ049
+    name: Repairs were reported between Jan 2021 and today
+    dimension: validity
+    severity: medium
+    owner: Head of Repairs and Maintenance
+    table: silver_repair_issue
+    column: created_at
+    check: date_window
+    columns: [created_at]
+    min: '2021-01-01'
+
+  # ------------------------------------------------------------------- consistency
+  - id: DQ060
+    name: Tenancy ends on or after it starts
+    dimension: consistency
+    severity: high
+    owner: Head of Housing Management
+    table: silver_tenancy
+    column: start_date, actual_end_date, fixed_term_end_date
+    check: sql
+    sql: |
+      SELECT tenancy_ref AS record_key, 'start_date / end dates' AS column_name,
+             concat('starts ', start_date, ' but ends ',
+                    coalesce(actual_end_date, fixed_term_end_date)) AS detail
+      FROM {db}.silver_tenancy
+      WHERE actual_end_date < start_date OR fixed_term_end_date < start_date
+
+  - id: DQ061
+    name: Ended tenancies have an end date; live ones do not
+    dimension: consistency
+    severity: medium
+    owner: Head of Housing Management
+    table: silver_tenancy
+    column: tenancy_status, actual_end_date
+    check: sql
+    sql: |
+      SELECT tenancy_ref AS record_key, 'actual_end_date' AS column_name,
+             concat(tenancy_status, CASE WHEN actual_end_date IS NULL THEN ' with no end date'
+                                         ELSE concat(' but ended ', actual_end_date) END) AS detail
+      FROM {db}.silver_tenancy
+      WHERE (tenancy_status IN ('Ended', 'Renewed') AND actual_end_date IS NULL)
+         OR (tenancy_status IN ('Active', 'Periodic') AND actual_end_date IS NOT NULL)
+
+  - id: DQ062
+    name: No overlapping tenancies on a property
+    dimension: consistency
+    severity: high
+    owner: Head of Housing Management
+    table: silver_tenancy
+    column: start_date, actual_end_date
+    check: sql
+    sql: |
+      SELECT a.tenancy_ref AS record_key, 'start_date, actual_end_date' AS column_name,
+             concat('overlaps tenancy ', b.tenancy_ref, ' on property ', a.property_ref) AS detail
+      FROM {db}.silver_tenancy a
+      JOIN {db}.silver_tenancy b
+        ON a.property_ref = b.property_ref AND a.tenancy_ref <> b.tenancy_ref
+      WHERE a.start_date <= coalesce(b.actual_end_date, DATE '9999-12-31')
+        AND b.start_date <= coalesce(a.actual_end_date, DATE '9999-12-31')
+
+  - id: DQ063
+    name: Renewals follow on from the previous tenancy (same home, next day)
+    dimension: consistency
+    severity: medium
+    owner: Head of Housing Management
+    table: silver_tenancy
+    column: previous_tenancy_ref
+    check: sql
+    sql: |
+      SELECT t.tenancy_ref AS record_key, 'previous_tenancy_ref' AS column_name,
+             CASE WHEN p.tenancy_ref IS NULL
+                      THEN concat('previous tenancy ', t.previous_tenancy_ref, ' not found')
+                  WHEN p.property_ref <> t.property_ref
+                      THEN concat('previous tenancy is on ', p.property_ref)
+                  ELSE concat('starts ', t.start_date, ' but previous ended ',
+                              coalesce(CAST(p.actual_end_date AS STRING), 'never'))
+             END AS detail
+      FROM {db}.silver_tenancy t
+      LEFT JOIN {db}.silver_tenancy p ON p.tenancy_ref = t.previous_tenancy_ref
+      WHERE t.previous_tenancy_ref IS NOT NULL
+        AND (p.tenancy_ref IS NULL
+             OR p.property_ref <> t.property_ref
+             OR p.actual_end_date IS NULL
+             OR t.start_date <> date_add(p.actual_end_date, 1))
+    checked_sql: SELECT COUNT(*) FROM {db}.silver_tenancy WHERE previous_tenancy_ref IS NOT NULL
+
+  - id: DQ064
+    name: Property status matches its tenancies (Let = one live tenancy; Void or Sold = none)
+    dimension: consistency
+    severity: high
+    owner: Head of Housing Management
+    table: silver_property
+    column: property_status
+    check: sql
+    sql: |
+      WITH live AS (
+          SELECT property_ref, COUNT(*) AS n
+          FROM {db}.silver_tenancy
+          WHERE tenancy_status IN ('Active', 'Periodic')
+          GROUP BY property_ref
+      )
+      SELECT p.property_ref AS record_key, 'property_status' AS column_name,
+             concat(p.property_status, ' with ', coalesce(l.n, 0), ' live tenancies') AS detail
+      FROM {db}.silver_property p
+      LEFT JOIN live l ON l.property_ref = p.property_ref
+      WHERE (p.property_status = 'Let' AND coalesce(l.n, 0) <> 1)
+         OR (p.property_status IN ('Void', 'Sold') AND coalesce(l.n, 0) > 0)
+
+  - id: DQ065
+    name: No charges, repairs, certificates or invoices after a home was sold
+    dimension: consistency
+    severity: high
+    owner: Head of Housing Management
+    table: silver_property
+    column: disposal_date
+    check: sql
+    sql: |
+      WITH sold AS (
+          SELECT property_ref, disposal_date FROM {db}.silver_property
+          WHERE disposal_date IS NOT NULL
+      ),
+      after_sale AS (
+          SELECT t.property_ref, 'rent charges' AS what, COUNT(*) AS n
+          FROM {db}.silver_rent_transaction t JOIN sold s ON s.property_ref = t.property_ref
+          WHERE t.transaction_group = 'Charge' AND t.transaction_date > s.disposal_date
+          GROUP BY t.property_ref
+          UNION ALL
+          SELECT i.property_ref, 'repairs', COUNT(*)
+          FROM {db}.silver_repair_issue i JOIN sold s ON s.property_ref = i.property_ref
+          WHERE CAST(i.created_at AS DATE) > s.disposal_date
+          GROUP BY i.property_ref
+          UNION ALL
+          SELECT c.property_ref, 'certificates', COUNT(*)
+          FROM {db}.silver_compliance_certificate c JOIN sold s ON s.property_ref = c.property_ref
+          WHERE c.issue_date > s.disposal_date
+          GROUP BY c.property_ref
+          UNION ALL
+          SELECT v.property_ref, 'supplier invoices', COUNT(*)
+          FROM {db}.silver_purchase_invoice v JOIN sold s ON s.property_ref = v.property_ref
+          WHERE v.invoice_date > s.disposal_date
+          GROUP BY v.property_ref
+      )
+      SELECT property_ref AS record_key, 'disposal_date' AS column_name,
+             concat(n, ' ', what, ' dated after the sale') AS detail
+      FROM after_sale
+    checked_sql: SELECT COUNT(*) FROM {db}.silver_property WHERE disposal_date IS NOT NULL
+
+  - id: DQ066
+    name: Current ownership shares of a home add up to 100%
+    dimension: consistency
+    severity: high
+    owner: Head of Housing Management
+    table: silver_ownership
+    column: percentage_share
+    check: sql
+    sql: |
+      SELECT property_ref AS record_key, 'percentage_share' AS column_name,
+             concat('current shares add up to ', total, '%') AS detail
+      FROM (
+          SELECT property_ref, SUM(percentage_share) AS total
+          FROM {db}.silver_ownership
+          WHERE is_current
+          GROUP BY property_ref
+      ) x
+      WHERE total <> 100
+    checked_sql: SELECT COUNT(DISTINCT property_ref) FROM {db}.silver_ownership WHERE is_current
+
+  - id: DQ067
+    name: Shared Ownership share value and rent percentage agree with the share
+    dimension: consistency
+    severity: medium
+    owner: Head of Finance
+    table: silver_tenancy
+    column: share_value, rent_percentage_paid
+    check: sql
+    sql: |
+      SELECT tenancy_ref AS record_key, 'share_value, rent_percentage_paid' AS column_name,
+             concat('share ', ownership_share_pct, '% of ', full_market_value,
+                    ' but share value ', share_value,
+                    ' and rent paid on ', rent_percentage_paid, '%') AS detail
+      FROM {db}.silver_tenancy
+      WHERE ownership_share_pct IS NOT NULL
+        AND (abs(share_value - ownership_share_pct / 100 * full_market_value) > 1
+             OR abs(rent_percentage_paid - (100 - ownership_share_pct)) > 0.01)
+    checked_sql: SELECT COUNT(*) FROM {db}.silver_tenancy WHERE ownership_share_pct IS NOT NULL
+
+  - id: DQ068
+    name: Closing balance equals the tenancy's ledger (deposits held excluded)
+    dimension: consistency
+    severity: high
+    owner: Head of Finance
+    table: silver_tenancy
+    column: closing_balance
+    check: sql
+    sql: |
+      WITH ledger AS (
+          SELECT tenancy_ref, SUM(amount) AS total
+          FROM {db}.silver_rent_transaction
+          WHERE transaction_type NOT IN ('Deposit received', 'Deposit returned')
+          GROUP BY tenancy_ref
+      )
+      SELECT t.tenancy_ref AS record_key, 'closing_balance' AS column_name,
+             concat('closing balance ', coalesce(CAST(t.closing_balance AS STRING), 'blank'),
+                    ' but the ledger adds up to ', coalesce(l.total, 0)) AS detail
+      FROM {db}.silver_tenancy t
+      LEFT JOIN ledger l ON l.tenancy_ref = t.tenancy_ref
+      WHERE abs(coalesce(t.closing_balance, 0) - coalesce(l.total, 0)) > 0.005
+
+  - id: DQ069
+    name: No implausible balances (in credit, or more than 4 months' rent owed)
+    dimension: consistency
+    severity: medium
+    owner: Head of Finance
+    table: silver_tenancy
+    column: closing_balance
+    check: sql
+    sql: |
+      SELECT tenancy_ref AS record_key, 'closing_balance' AS column_name,
+             concat('balance ', closing_balance, ' on rent of ', rent_pcm, ' a month') AS detail
+      FROM {db}.silver_tenancy
+      WHERE closing_balance < 0 OR closing_balance > 4 * rent_pcm
+
+  - id: DQ070
+    name: Charges are positive and payments negative
+    dimension: consistency
+    severity: high
+    owner: Head of Finance
+    table: silver_rent_transaction
+    column: amount
+    check: sql
+    sql: |
+      SELECT transaction_id AS record_key, 'amount' AS column_name,
+             concat(transaction_type, ' of ', amount) AS detail
+      FROM {db}.silver_rent_transaction
+      WHERE (transaction_group = 'Charge' AND amount <= 0)
+         OR (transaction_group = 'Payment' AND amount >= 0)
+
+  - id: DQ071
+    name: Repair job net + tax = gross
+    dimension: consistency
+    severity: medium
+    owner: Head of Repairs and Maintenance
+    table: silver_repair_job
+    column: payable_net, payable_tax, payable_gross
+    check: sql
+    sql: |
+      SELECT job_id AS record_key, 'payable_gross' AS column_name,
+             concat(payable_net, ' + ', payable_tax, ' <> ', payable_gross) AS detail
+      FROM {db}.silver_repair_job
+      WHERE abs(payable_net + payable_tax - payable_gross) > 0.01
+
+  - id: DQ072
+    name: Supplier invoice net + VAT = gross
+    dimension: consistency
+    severity: medium
+    owner: Head of Finance
+    table: silver_purchase_invoice
+    column: net_amount, vat_amount, gross_amount
+    check: sql
+    sql: |
+      SELECT invoice_id AS record_key, 'gross_amount' AS column_name,
+             concat(net_amount, ' + ', vat_amount, ' <> ', gross_amount) AS detail
+      FROM {db}.silver_purchase_invoice
+      WHERE abs(net_amount + vat_amount - gross_amount) > 0.01
+
+  - id: DQ073
+    name: Repairs are only on rental (PRS) homes
+    dimension: consistency
+    severity: medium
+    owner: Head of Repairs and Maintenance
+    table: silver_repair_issue
+    column: property_ref
+    check: sql
+    sql: |
+      SELECT i.issue_id AS record_key, 'property_ref' AS column_name,
+             concat('repair on ', p.tenure, ' home ', i.property_ref) AS detail
+      FROM {db}.silver_repair_issue i
+      JOIN {db}.silver_property p ON p.property_ref = i.property_ref
+      WHERE p.tenure <> 'PRS'
+
+  - id: DQ074
+    name: Certificates are only on rental (PRS) homes
+    dimension: consistency
+    severity: medium
+    owner: Compliance Manager
+    table: silver_compliance_certificate
+    column: property_ref
+    check: sql
+    sql: |
+      SELECT c.certificate_id AS record_key, 'property_ref' AS column_name,
+             concat(c.certificate_type, ' on ', p.tenure, ' home ', c.property_ref) AS detail
+      FROM {db}.silver_compliance_certificate c
+      JOIN {db}.silver_property p ON p.property_ref = c.property_ref
+      WHERE p.tenure <> 'PRS'
+
+  - id: DQ075
+    name: Gas Safety certificates only where the home has gas
+    dimension: consistency
+    severity: high
+    owner: Compliance Manager
+    table: silver_compliance_certificate
+    column: certificate_type
+    check: sql
+    sql: |
+      SELECT c.certificate_id AS record_key, 'certificate_type' AS column_name,
+             concat('Gas Safety Certificate on ', c.property_ref, ', which has no gas supply') AS detail
+      FROM {db}.silver_compliance_certificate c
+      JOIN {db}.silver_property p ON p.property_ref = c.property_ref
+      WHERE c.certificate_type = 'Gas Safety Certificate' AND NOT p.has_gas
+
+  - id: DQ076
+    name: Offers are accepted only on agreed listings
+    dimension: consistency
+    severity: medium
+    owner: Head of Lettings and Sales
+    table: silver_offer
+    column: offer_status
+    check: sql
+    sql: |
+      SELECT o.offer_id AS record_key, 'offer_status' AS column_name,
+             concat('accepted on listing ', o.listing_id, ' which is ', l.listing_status,
+                    CASE WHEN l.agreed_date IS NULL THEN ' with no agreed date' ELSE '' END) AS detail
+      FROM {db}.silver_offer o
+      JOIN {db}.silver_listing l ON l.listing_id = o.listing_id
+      WHERE o.offer_status = 'Accepted'
+        AND (l.agreed_date IS NULL OR l.listing_status NOT IN ('Let', 'Sold'))
+    checked_sql: SELECT COUNT(*) FROM {db}.silver_offer WHERE offer_status = 'Accepted'
+
+  - id: DQ077
+    name: Deposit within the Tenant Fees Act cap (5 weeks' rent)
+    dimension: consistency
+    severity: high
+    owner: Head of Housing Management
+    table: silver_tenancy
+    column: deposit_amount
+    check: sql
+    sql: |
+      SELECT tenancy_ref AS record_key, 'deposit_amount' AS column_name,
+             concat('deposit ', deposit_amount, ' is over 5 weeks of rent ',
+                    round(rent_pcm * 12 / 52 * 5, 2)) AS detail
+      FROM {db}.silver_tenancy
+      WHERE tenancy_type = 'Assured Shorthold Tenancy'
+        AND deposit_amount > round(rent_pcm * 12 / 52 * 5, 2) + 0.01
+    checked_sql: |
+      SELECT COUNT(*) FROM {db}.silver_tenancy
+      WHERE tenancy_type = 'Assured Shorthold Tenancy'
+
+  # -------------------------------------------------------------------- timeliness
+  - id: DQ090
+    name: Silver tables were loaded in the last 24 hours
+    dimension: timeliness
+    severity: medium
+    owner: table owner
+    table: all
+    column: loaded_at
+    check: freshness
+    max_age_hours: 24
+
+  - id: DQ091
+    name: FixFlo issues have changed in the last 7 days (feed is flowing)
+    dimension: timeliness
+    severity: medium
+    owner: Head of Repairs and Maintenance
+    table: silver_repair_issue
+    column: status_changed_at
+    check: freshness
+    max_age_hours: 168
+
+  - id: DQ092
+    name: Rent ledger has transactions in the last 35 days (feed is flowing)
+    dimension: timeliness
+    severity: medium
+    owner: Head of Finance
+    table: silver_rent_transaction
+    column: transaction_date
+    check: freshness
+    max_age_hours: 840

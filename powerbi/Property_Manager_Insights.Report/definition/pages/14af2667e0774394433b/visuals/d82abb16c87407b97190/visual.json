@@ -1,0 +1,140 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "d82abb16c87407b97190",
+  "position": {
+    "x": 20,
+    "y": 100,
+    "z": 0,
+    "height": 136,
+    "width": 1880,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "drillFilterOtherVisuals": true,
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_lettings_funnel"
+                    }
+                  },
+                  "Property": "Avg Days to Move In"
+                }
+              },
+              "queryRef": "fact_lettings_funnel.Avg Days to Move In",
+              "nativeQueryRef": "Avg Days to Move In"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_tenancy"
+                    }
+                  },
+                  "Property": "Occupancy Rate (PRS)"
+                }
+              },
+              "queryRef": "fact_tenancy.Occupancy Rate (PRS)",
+              "nativeQueryRef": "Occupancy Rate (PRS)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_lettings_funnel"
+                    }
+                  },
+                  "Property": "Lets Agreed"
+                }
+              },
+              "queryRef": "fact_lettings_funnel.Lets Agreed",
+              "nativeQueryRef": "Lets Agreed"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_lettings_funnel"
+                    }
+                  },
+                  "Property": "Viewing to Offer %"
+                }
+              },
+              "queryRef": "fact_lettings_funnel.Viewing to Offer %",
+              "nativeQueryRef": "Viewing to Offer %"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_lettings_funnel"
+                    }
+                  },
+                  "Property": "Applicants per Available Home"
+                }
+              },
+              "queryRef": "fact_lettings_funnel.Applicants per Available Home",
+              "nativeQueryRef": "Applicants per Available Home"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "value": [
+        {
+          "properties": {
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
+          }
+        }
+      ],
+      "label": [
+        {
+          "properties": {
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#A5D6A7'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

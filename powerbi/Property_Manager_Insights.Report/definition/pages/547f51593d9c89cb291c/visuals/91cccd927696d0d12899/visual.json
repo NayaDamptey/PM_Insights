@@ -1,0 +1,337 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "91cccd927696d0d12899",
+  "position": {
+    "x": 798.31578947368416,
+    "y": 669.978947368421,
+    "z": 0,
+    "height": 388.04210526315791,
+    "width": 600.25263157894733,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_property"
+                    }
+                  },
+                  "Property": "region"
+                }
+              },
+              "queryRef": "dim_property.region",
+              "nativeQueryRef": "region",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_property"
+                    }
+                  },
+                  "Property": "town"
+                }
+              },
+              "queryRef": "dim_property.town",
+              "nativeQueryRef": "town",
+              "active": false
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_property"
+                    }
+                  },
+                  "Property": "address_line1"
+                }
+              },
+              "queryRef": "dim_property.address_line1",
+              "nativeQueryRef": "address_line1",
+              "active": false
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_rent_transaction"
+                    }
+                  },
+                  "Property": "Revenue Generated"
+                }
+              },
+              "queryRef": "fact_rent_transaction.Revenue Generated",
+              "nativeQueryRef": "Revenue Generated"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_rent_transaction"
+                    }
+                  },
+                  "Property": "Operating Expenses"
+                }
+              },
+              "queryRef": "fact_rent_transaction.Operating Expenses",
+              "nativeQueryRef": "Operating Expenses"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_rent_transaction"
+                    }
+                  },
+                  "Property": "Net Operating Income"
+                }
+              },
+              "queryRef": "fact_rent_transaction.Net Operating Income",
+              "nativeQueryRef": "Net Operating Income"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_rent_transaction"
+                    }
+                  },
+                  "Property": "Current Tenant Arrears"
+                }
+              },
+              "queryRef": "fact_rent_transaction.Current Tenant Arrears",
+              "nativeQueryRef": "Current Tenant Arrears"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "dim_property"
+                  }
+                },
+                "Property": "region"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "expansionStates": [
+      {
+        "roles": [
+          "Rows"
+        ],
+        "levels": [
+          {
+            "queryRefs": [
+              "dim_property.region"
+            ],
+            "isCollapsed": true,
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "dim_property.town"
+            ],
+            "isCollapsed": true
+          },
+          {
+            "queryRefs": [
+              "dim_property.address_line1"
+            ],
+            "isCollapsed": true
+          }
+        ],
+        "root": {}
+      }
+    ],
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Portfolio scorecard: region → town → home'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "45c47ee0b9e48cd6d63b",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "dim_property"
+              }
+            },
+            "Property": "region"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "0199fe231bdd2914b484",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "dim_property"
+              }
+            },
+            "Property": "town"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "84e05fe2cfe0275f7675",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "dim_property"
+              }
+            },
+            "Property": "address_line1"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "38d52b69546cade11277",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fact_rent_transaction"
+              }
+            },
+            "Property": "Revenue Generated"
+          }
+        },
+        "type": "Advanced",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "f",
+              "Entity": "fact_rent_transaction",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Not": {
+                  "Expression": {
+                    "Comparison": {
+                      "ComparisonKind": 0,
+                      "Left": {
+                        "Measure": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Source": "f"
+                            }
+                          },
+                          "Property": "Revenue Generated"
+                        }
+                      },
+                      "Right": {
+                        "Literal": {
+                          "Value": "null"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "e7ba42a10539684bb8c5",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fact_rent_transaction"
+              }
+            },
+            "Property": "Operating Expenses"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "0aab49822b32d82ffa3a",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fact_rent_transaction"
+              }
+            },
+            "Property": "Net Operating Income"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "a3576a04397086463bac",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fact_rent_transaction"
+              }
+            },
+            "Property": "Current Tenant Arrears"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

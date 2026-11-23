@@ -1,0 +1,154 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "17f9d26719eaa3b77d3d",
+  "position": {
+    "x": 20,
+    "y": 100,
+    "z": 0,
+    "height": 136,
+    "width": 1880,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "drillFilterOtherVisuals": true,
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_repair_job"
+                    }
+                  },
+                  "Property": "Avg Days to Complete"
+                }
+              },
+              "queryRef": "fact_repair_job.Avg Days to Complete",
+              "nativeQueryRef": "Avg Days to Complete"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_repair_job"
+                    }
+                  },
+                  "Property": "Jobs Open Over 15 Days"
+                }
+              },
+              "queryRef": "fact_repair_job.Jobs Open Over 15 Days",
+              "nativeQueryRef": "Jobs Open Over 15 Days"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_repair_job"
+                    }
+                  },
+                  "Property": "Contractors Not Used (12 months)"
+                }
+              },
+              "queryRef": "fact_repair_job.Contractors Not Used (12 months)",
+              "nativeQueryRef": "Contractors Not Used (12 months)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_repair_job"
+                    }
+                  },
+                  "Property": "Compliance %"
+                }
+              },
+              "queryRef": "fact_repair_job.Compliance %",
+              "nativeQueryRef": "Compliance %"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_repair_job"
+                    }
+                  },
+                  "Property": "Homes Not Compliant"
+                }
+              },
+              "queryRef": "fact_repair_job.Homes Not Compliant",
+              "nativeQueryRef": "Homes Not Compliant"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_repair_job"
+                    }
+                  },
+                  "Property": "Callback Rate"
+                }
+              },
+              "queryRef": "fact_repair_job.Callback Rate",
+              "nativeQueryRef": "Callback Rate"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "value": [
+        {
+          "properties": {
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
+          }
+        }
+      ],
+      "label": [
+        {
+          "properties": {
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#A5D6A7'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

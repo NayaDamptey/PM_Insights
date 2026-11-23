@@ -1,0 +1,126 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "b5aeb8072ce144d22ae8",
+  "position": {
+    "x": 907.45263157894738,
+    "y": 645.72631578947369,
+    "z": 0,
+    "height": 419.36842105263156,
+    "width": 469.89473684210526,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "clusteredBarChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_property"
+                    }
+                  },
+                  "Property": "town"
+                }
+              },
+              "queryRef": "dim_property.town",
+              "nativeQueryRef": "town",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_rent_transaction"
+                    }
+                  },
+                  "Property": "Revenue Generated"
+                }
+              },
+              "queryRef": "fact_rent_transaction.Revenue Generated",
+              "nativeQueryRef": "Revenue Generated"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "labels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Revenue by town'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "a643da962b8dbf3df319",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "dim_property"
+              }
+            },
+            "Property": "town"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "f22a4cc393fd68db7fc2",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fact_rent_transaction"
+              }
+            },
+            "Property": "Revenue Generated"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

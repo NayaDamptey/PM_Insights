@@ -1,0 +1,249 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "80d7d4eed06d0ea3c433",
+  "position": {
+    "x": 508.73239436619718,
+    "y": 669.29577464788736,
+    "z": 0,
+    "height": 388.73239436619718,
+    "width": 278.87323943661971,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_arrears_aged"
+                    }
+                  },
+                  "Property": "is_current_tenant"
+                }
+              },
+              "queryRef": "fact_arrears_aged.is_current_tenant",
+              "nativeQueryRef": "is_current_tenant",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_arrears_aged"
+                    }
+                  },
+                  "Property": "age_band"
+                }
+              },
+              "queryRef": "fact_arrears_aged.age_band",
+              "nativeQueryRef": "age_band",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_arrears_aged"
+                    }
+                  },
+                  "Property": "tenancy_ref"
+                }
+              },
+              "queryRef": "fact_arrears_aged.tenancy_ref",
+              "nativeQueryRef": "tenancy_ref",
+              "active": false
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_rent_transaction"
+                    }
+                  },
+                  "Property": "Aged Arrears"
+                }
+              },
+              "queryRef": "fact_rent_transaction.Aged Arrears",
+              "nativeQueryRef": "Aged Arrears"
+            }
+          ]
+        }
+      }
+    },
+    "expansionStates": [
+      {
+        "roles": [
+          "Rows"
+        ],
+        "levels": [
+          {
+            "queryRefs": [
+              "fact_arrears_aged.is_current_tenant"
+            ],
+            "isCollapsed": true,
+            "identityKeys": [
+              {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_arrears_aged"
+                    }
+                  },
+                  "Property": "is_current_tenant"
+                }
+              }
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "fact_arrears_aged.age_band"
+            ],
+            "isCollapsed": true,
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "fact_arrears_aged.tenancy_ref"
+            ],
+            "isCollapsed": true
+          }
+        ],
+        "root": {
+          "children": [
+            {
+              "identityValues": [
+                {
+                  "Literal": {
+                    "Value": "false"
+                  }
+                }
+              ],
+              "isToggled": true
+            },
+            {
+              "identityValues": [
+                {
+                  "Literal": {
+                    "Value": "true"
+                  }
+                }
+              ],
+              "isToggled": true
+            }
+          ]
+        }
+      }
+    ],
+    "objects": {
+      "columnHeaders": [
+        {
+          "properties": {
+            "wordWrap": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Current arrears'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "20b74e6b0d42023ffbe9",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fact_arrears_aged"
+              }
+            },
+            "Property": "is_current_tenant"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "a8018b6132cddf59d0bb",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fact_arrears_aged"
+              }
+            },
+            "Property": "age_band"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "9642c23ecf568169c9c3",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fact_arrears_aged"
+              }
+            },
+            "Property": "tenancy_ref"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "de7d7bac230156d72c34",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fact_rent_transaction"
+              }
+            },
+            "Property": "Aged Arrears"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

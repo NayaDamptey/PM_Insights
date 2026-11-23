@@ -1,0 +1,1563 @@
+# Generated from Data_Dictionary_Source_and_Silver.xlsx by `python -m extract.build_config`.
+# Do not edit by hand: change the dictionary or the rules in build_config.py.
+systems:
+  qube:
+    base_url_env: MRI_BASE_URL
+    auth: mri_basic
+    page_size: 1000
+  fixflo:
+    base_url_env: FIXFLO_BASE_URL
+    auth: bearer
+    token_env: FIXFLO_API_TOKEN
+    page_size: 100
+  engage:
+    base_url_env: ENGAGE_BASE_URL
+    auth: bearer
+    token_env: ENGAGE_API_TOKEN
+    page_size: 1000
+tables:
+  qube_staff:
+    system: qube
+    source_endpoint: GET https://[MRIWebDomain]/qube/api/v1/staff/{StaffCode}
+    expected_rows: 148
+    fetch:
+      method: collection
+      path: /qube/api/v1/staff
+    key: StaffCode
+    columns:
+    - name: StaffCode
+      path: StaffCode
+    - name: FirstName
+      path: FirstName
+    - name: LastName
+      path: LastName
+    - name: Role
+      path: Role
+    - name: Region
+      path: Region
+    - name: Location
+      path: Location
+    - name: Email
+      path: Email
+    - name: StartDate
+      path: StartDate
+    - name: EndDate
+      path: EndDate
+    - name: Active
+      path: Active
+    watermark_column: null
+    source_filter: null
+    incremental: false
+  qube_blocks:
+    system: qube
+    source_endpoint: GET https://[MRIWebDomain]/qube/api/v1/blocks/{BlockRef}
+    expected_rows: 95
+    fetch:
+      method: collection
+      path: /qube/api/v1/blocks
+    key: BlockRef
+    columns:
+    - name: BlockRef
+      path: BlockRef
+    - name: BlockName
+      path: BlockName
+    - name: StreetNumber
+      path: StreetNumber
+    - name: Street
+      path: Street
+    - name: Town
+      path: Town
+    - name: County
+      path: County
+    - name: Postcode
+      path: Postcode
+    - name: Region
+      path: Region
+    - name: Latitude
+      path: Latitude
+    - name: Longitude
+      path: Longitude
+    - name: Floors
+      path: Floors
+    - name: BuiltYear
+      path: BuiltYear
+    - name: Units
+      path: Units
+    watermark_column: null
+    source_filter: null
+    incremental: false
+  qube_properties:
+    system: qube
+    source_endpoint: GET https://[MRIWebDomain]/qube/api/v1/properties/{PropertyRef}
+    expected_rows: 9323
+    fetch:
+      method: collection
+      path: /qube/api/v1/properties
+    key: PropertyRef
+    columns:
+    - name: PropertyRef
+      path: PropertyRef
+    - name: BlockRef
+      path: BlockRef
+    - name: AddressLine1
+      path: AddressLine1
+    - name: AddressLine2
+      path: AddressLine2
+    - name: Town
+      path: Town
+    - name: County
+      path: County
+    - name: Postcode
+      path: Postcode
+    - name: Region
+      path: Region
+    - name: Latitude
+      path: Latitude
+    - name: Longitude
+      path: Longitude
+    - name: PropertyType
+      path: PropertyType
+    - name: Bedrooms
+      path: Bedrooms
+    - name: Bathrooms
+      path: Bathrooms
+    - name: Tenure
+      path: Tenure
+    - name: Department
+      path: Department
+    - name: GasSupply
+      path: GasSupply
+    - name: ManagerCode
+      path: ManagerCode
+    - name: AcquisitionDate
+      path: AcquisitionDate
+    - name: AcquisitionCost
+      path: AcquisitionCost
+    - name: MarketValue
+      path: MarketValue
+    - name: MarketRentPCM
+      path: MarketRentPCM
+    - name: PropertyStatus
+      path: PropertyStatus
+    - name: DisposalDate
+      path: DisposalDate
+    - name: DisposalValue
+      path: DisposalValue
+    watermark_column: null
+    source_filter: null
+    incremental: false
+  qube_tenants:
+    system: qube
+    source_endpoint: GET https://[MRIWebDomain]/qube/api/v1/tenants/{TenantRef}
+    expected_rows: 16367
+    fetch:
+      method: collection
+      path: /qube/api/v1/tenants
+    key: TenantRef
+    columns:
+    - name: TenantRef
+      path: TenantRef
+    - name: Title
+      path: Title
+    - name: FirstName
+      path: FirstName
+    - name: LastName
+      path: LastName
+    - name: Email
+      path: Email
+    - name: Mobile
+      path: Mobile
+    - name: EngageApplicantId
+      path: EngageApplicantId
+    - name: RightToRentChecked
+      path: RightToRentChecked
+    - name: RightToRentCheckDate
+      path: RightToRentCheckDate
+    watermark_column: null
+    source_filter: null
+    incremental: false
+  qube_tenancies:
+    system: qube
+    source_endpoint: GET https://[MRIWebDomain]/qube/api/v1/tenancies/{TenancyRef}
+    expected_rows: 17177
+    fetch:
+      method: collection
+      path: /qube/api/v1/tenancies
+    key: TenancyRef
+    columns:
+    - name: TenancyRef
+      path: TenancyRef
+    - name: PropertyRef
+      path: PropertyRef
+    - name: LeadTenantRef
+      path: LeadTenantRef
+    - name: PreviousTenancyRef
+      path: PreviousTenancyRef
+    - name: TenancyType
+      path: TenancyType
+    - name: StartDate
+      path: StartDate
+    - name: FixedTermEndDate
+      path: FixedTermEndDate
+    - name: ActualEndDate
+      path: ActualEndDate
+    - name: TenancyStatus
+      path: TenancyStatus
+    - name: RentPCM
+      path: RentPCM
+    - name: RentFrequency
+      path: RentFrequency
+    - name: RentDueDay
+      path: RentDueDay
+    - name: OwnershipSharePct
+      path: OwnershipSharePct
+    - name: FullMarketValue
+      path: FullMarketValue
+    - name: ShareValue
+      path: ShareValue
+    - name: RentRatePct
+      path: RentRatePct
+    - name: RentPercentagePaid
+      path: RentPercentagePaid
+    - name: LastUpdatedDate
+      path: LastUpdatedDate
+    - name: DepositAmount
+      path: DepositAmount
+    - name: DepositScheme
+      path: DepositScheme
+    - name: DepositProtectedDate
+      path: DepositProtectedDate
+    - name: DepositStatus
+      path: DepositStatus
+    - name: ClosingBalance
+      path: ClosingBalance
+    watermark_column: LastUpdatedDate
+    source_filter: null
+    incremental: false
+  qube_tenancy_tenants:
+    system: qube
+    source_endpoint: GET https://[MRIWebDomain]/qube/api/v1/tenancies/{TenancyRef}/tenants
+    expected_rows: 24069
+    fetch:
+      method: per_parent
+      parent: qube_tenancies
+      path: /qube/api/v1/tenancies/{TenancyRef}/tenants
+      response: mri_v1
+    columns:
+    - name: TenancyRef
+      path: TenancyRef
+    - name: TenantRef
+      path: TenantRef
+    - name: IsLeadTenant
+      path: IsLeadTenant
+    - name: RentSharePct
+      path: RentSharePct
+    - name: StartDate
+      path: StartDate
+    - name: EndDate
+      path: EndDate
+    watermark_column: null
+    source_filter: null
+    incremental: false
+  qube_transactions:
+    system: qube
+    source_endpoint: GET https://[MRIWebDomain]/qube/api/v1/tenancies/{TenancyRef}/transactions
+    expected_rows: 744145
+    fetch:
+      method: per_parent
+      parent: qube_tenancies
+      path: /qube/api/v1/tenancies/{TenancyRef}/transactions
+      response: mri_v1
+    columns:
+    - name: TransactionId
+      path: TransactionId
+    - name: TenancyRef
+      path: TenancyRef
+    - name: PropertyRef
+      path: PropertyRef
+    - name: TenantRef
+      path: TenantRef
+    - name: TransactionDate
+      path: TransactionDate
+    - name: Period
+      path: Period
+    - name: TransactionType
+      path: TransactionType
+    - name: Amount
+      path: Amount
+    - name: PaymentMethod
+      path: PaymentMethod
+    - name: Reference
+      path: Reference
+    - name: OwnershipSharePct
+      path: OwnershipSharePct
+    watermark_column: null
+    source_filter: null
+    incremental: false
+  qube_compliance_certificates:
+    system: qube
+    source_endpoint: GET https://[MRIWebDomain]/qube/api/v1/properties/{PropertyRef}/certificates
+    expected_rows: 22931
+    fetch:
+      method: per_parent
+      parent: qube_properties
+      path: /qube/api/v1/properties/{PropertyRef}/certificates
+      response: mri_v1
+    columns:
+    - name: CertificateId
+      path: CertificateId
+    - name: PropertyRef
+      path: PropertyRef
+    - name: CertificateType
+      path: CertificateType
+    - name: IssueDate
+      path: IssueDate
+    - name: ExpiryDate
+      path: ExpiryDate
+    - name: Contractor
+      path: Contractor
+    - name: Outcome
+      path: Outcome
+    - name: DocumentRef
+      path: DocumentRef
+    watermark_column: null
+    source_filter: null
+    incremental: false
+  qube_suppliers:
+    system: qube
+    source_endpoint: GET https://[MRIWebDomain]/qube/api/v1/suppliers/{SupplierCode}
+    expected_rows: 175
+    fetch:
+      method: collection
+      path: /qube/api/v1/suppliers
+    key: SupplierCode
+    columns:
+    - name: SupplierCode
+      path: SupplierCode
+    - name: FixFloContractorId
+      path: FixFloContractorId
+    - name: SupplierName
+      path: SupplierName
+    - name: Trade
+      path: Trade
+    - name: Region
+      path: Region
+    - name: Email
+      path: Email
+    - name: Phone
+      path: Phone
+    - name: GasSafeNumber
+      path: GasSafeNumber
+    - name: InsuranceExpiry
+      path: InsuranceExpiry
+    - name: Active
+      path: Active
+    - name: VATRegistered
+      path: VATRegistered
+    watermark_column: null
+    source_filter: null
+    incremental: false
+  qube_purchase_invoices:
+    system: qube
+    source_endpoint: GET https://[MRIWebDomain]/qube/api/v1/purchase-invoices/{InvoiceId}
+    expected_rows: 91745
+    fetch:
+      method: collection
+      path: /qube/api/v1/purchase-invoices
+    key: InvoiceId
+    columns:
+    - name: InvoiceId
+      path: InvoiceId
+    - name: SupplierCode
+      path: SupplierCode
+    - name: PropertyRef
+      path: PropertyRef
+    - name: BlockRef
+      path: BlockRef
+    - name: InvoiceDate
+      path: InvoiceDate
+    - name: Category
+      path: Category
+    - name: SubCategory
+      path: SubCategory
+    - name: NetAmount
+      path: NetAmount
+    - name: VATAmount
+      path: VATAmount
+    - name: GrossAmount
+      path: GrossAmount
+    - name: FixFloIssueId
+      path: FixFloIssueId
+    - name: Status
+      path: Status
+    watermark_column: null
+    source_filter: null
+    incremental: false
+  qube_suspense_items:
+    system: qube
+    source_endpoint: GET https://[MRIWebDomain]/qube/api/v1/suspense-items/{ItemId}
+    expected_rows: 1200
+    fetch:
+      method: collection
+      path: /qube/api/v1/suspense-items
+    key: ItemId
+    columns:
+    - name: ItemId
+      path: ItemId
+    - name: ItemType
+      path: ItemType
+    - name: PropertyRef
+      path: PropertyRef
+    - name: RaisedDate
+      path: RaisedDate
+    - name: Amount
+      path: Amount
+    - name: Status
+      path: Status
+    - name: ClearedDate
+      path: ClearedDate
+    - name: OwnerStaffCode
+      path: OwnerStaffCode
+    - name: Notes
+      path: Notes
+    watermark_column: null
+    source_filter: null
+    incremental: false
+  qube_resident_contact:
+    system: qube
+    source_endpoint: GET https://[MRIWebDomain]/MRIAPIServices/api.asp?$api=resident-contact&RMPROPID={property}&$format=json  (API
+      name and fields from the MRI guide, Figure 1)
+    expected_rows: 16367
+    fetch:
+      method: mri_service
+      api: resident-contact
+      parent: qube_properties
+      parent_field: PropertyRef
+      param: RMPROPID
+    columns:
+    - name: PropertyId
+      path: PropertyId
+    - name: BuildingId
+      path: BuildingId
+    - name: UnitId
+      path: UnitId
+    - name: NameId
+      path: NameId
+    - name: FirstName
+      path: FirstName
+    - name: LastName
+      path: LastName
+    - name: Email
+      path: Email
+    - name: Cell
+      path: Cell
+    - name: LastUpdate
+      path: LastUpdate
+    - name: Status
+      path: Status
+    watermark_column: LastUpdate
+    source_filter: null
+    incremental: false
+  qube_income_categories:
+    system: qube
+    source_endpoint: GET https://[MRIWebDomain]/MRIAPIServices/api.asp?$api=income-categories&$format=json  (API name and
+      fields from the MRI guide)
+    expected_rows: 4
+    fetch:
+      method: mri_service
+      api: income-categories
+    columns:
+    - name: IncomeCategory
+      path: IncomeCategory
+    - name: Description
+      path: Description
+    - name: PriorityCode
+      path: PriorityCode
+    - name: BillingFrequency
+      path: BillingFrequency
+    - name: Fasb13
+      path: Fasb13
+    watermark_column: null
+    source_filter: null
+    incremental: false
+  qube_landlords:
+    system: qube
+    source_endpoint: GET https://[MRIWebDomain]/qube/api/v1/landlords/{LandlordRef}
+    expected_rows: 1
+    fetch:
+      method: collection
+      path: /qube/api/v1/landlords
+    key: LandlordRef
+    columns:
+    - name: LandlordRef
+      path: LandlordRef
+    - name: Category
+      path: Category
+    - name: CompanyName
+      path: CompanyName
+    - name: Title
+      path: Title
+    - name: Forename
+      path: Forename
+    - name: Surname
+      path: Surname
+    - name: PhoneType
+      path: PhoneType
+    - name: Phone
+      path: Phone
+    - name: EmailType
+      path: EmailType
+    - name: Email
+      path: Email
+    - name: AddressSubDwelling
+      path: AddressSubDwelling
+    - name: AddressNameNumber
+      path: AddressNameNumber
+    - name: AddressStreet
+      path: AddressStreet
+    - name: AddressLocality
+      path: AddressLocality
+    - name: AddressTown
+      path: AddressTown
+    - name: AddressCounty
+      path: AddressCounty
+    - name: AddressPostcode
+      path: AddressPostcode
+    - name: AddressCountryCode
+      path: AddressCountryCode
+    - name: AddressUPRN
+      path: AddressUPRN
+    - name: PotentialLandlord
+      path: PotentialLandlord
+    - name: Archived
+      path: Archived
+    - name: Notes
+      path: Notes
+    - name: CreatedDate
+      path: CreatedDate
+    - name: ModifiedDate
+      path: ModifiedDate
+    watermark_column: ModifiedDate
+    source_filter: null
+    incremental: false
+  qube_property_owners:
+    system: qube
+    source_endpoint: GET https://[MRIWebDomain]/qube/api/v1/properties/{PropertyRef}/owners
+    expected_rows: 31343
+    fetch:
+      method: per_parent
+      parent: qube_properties
+      path: /qube/api/v1/properties/{PropertyRef}/owners
+      response: mri_v1
+    columns:
+    - name: OwnerId
+      path: OwnerId
+    - name: PropertyRef
+      path: PropertyRef
+    - name: LandlordRef
+      path: LandlordRef
+    - name: TenantRef
+      path: TenantRef
+    - name: OwnerType
+      path: OwnerType
+    - name: Active
+      path: Active
+    - name: PercentageShare
+      path: PercentageShare
+    - name: EffectiveFrom
+      path: EffectiveFrom
+    - name: EffectiveTo
+      path: EffectiveTo
+    - name: CreatedAt
+      path: CreatedAt
+    - name: ModifiedAt
+      path: ModifiedAt
+    watermark_column: ModifiedAt
+    source_filter: null
+    incremental: false
+  qube_landlord_bank_accounts:
+    system: qube
+    source_endpoint: GET https://[MRIWebDomain]/qube/api/v1/landlords/{LandlordRef}/bank-accounts
+    expected_rows: 1
+    fetch:
+      method: per_parent
+      parent: qube_landlords
+      path: /qube/api/v1/landlords/{LandlordRef}/bank-accounts
+      response: mri_v1
+    columns:
+    - name: LandlordRef
+      path: LandlordRef
+    - name: AccountHolderName
+      path: AccountHolderName
+    - name: AccountName
+      path: AccountName
+    - name: AccountNumber
+      path: AccountNumber
+    - name: SortCode
+      path: SortCode
+    - name: BranchName
+      path: BranchName
+    - name: BicNumber
+      path: BicNumber
+    - name: IbanNumber
+      path: IbanNumber
+    watermark_column: null
+    source_filter: null
+    incremental: false
+  fixflo_properties:
+    system: fixflo
+    source_endpoint: 'GET /Property/Search?pg={n}&pgsz={size}  (one property: GET /Property?Id={id} or ?ExternalPropertyRef={ref})'
+    expected_rows: 3935
+    fetch:
+      method: fixflo_pager
+      path: /Property/Search
+      page_param: pg
+      size_param: pgsz
+    columns:
+    - name: id
+      path: id
+    - name: BlockId
+      path: BlockId
+    - name: ExternalPropertyRef
+      path: ExternalPropertyRef
+    - name: PropertyAddressId
+      path: PropertyAddressId
+    - name: Address.AddressLine1
+      path: Address.AddressLine1
+    - name: Address.AddressLine2
+      path: Address.AddressLine2
+    - name: Address.Town
+      path: Address.Town
+    - name: Address.County
+      path: Address.County
+    - name: Address.PostCode
+      path: Address.PostCode
+    - name: Address.Country
+      path: Address.Country
+    - name: UpdateDate
+      path: UpdateDate
+    - name: KeyReference
+      path: KeyReference
+    - name: IsNotManaged
+      path: IsNotManaged
+    - name: IsDeleted
+      path: IsDeleted
+    - name: ArchiveStatus
+      path: ArchiveStatus
+    - name: AssignedAgent.Id
+      path: AssignedAgent.Id
+    - name: AssignedAgent.ExternalRef
+      path: AssignedAgent.ExternalRef
+    - name: AssignedAgent.EmailAddress
+      path: AssignedAgent.EmailAddress
+    - name: AssignedAgent.DisplayName
+      path: AssignedAgent.DisplayName
+    - name: AssignedAgent.ContactNo
+      path: AssignedAgent.ContactNo
+    - name: AssignedAgent.IsDeleted
+      path: AssignedAgent.IsDeleted
+    - name: AssignedAgent.Brand.Id
+      path: AssignedAgent.Brand.Id
+    - name: AssignedAgent.Brand.Name
+      path: AssignedAgent.Brand.Name
+    - name: AssignedAgent.UpdateDate
+      path: AssignedAgent.UpdateDate
+    - name: AssignedTeam.id
+      path: AssignedTeam.id
+    - name: AssignedTeam.Name
+      path: AssignedTeam.Name
+    - name: AssignedTeam.IsDeleted
+      path: AssignedTeam.IsDeleted
+    - name: PropertyManager.Id
+      path: PropertyManager.Id
+    - name: PropertyManager.ExternalRef
+      path: PropertyManager.ExternalRef
+    - name: PropertyManager.EmailAddress
+      path: PropertyManager.EmailAddress
+    - name: PropertyManager.DisplayName
+      path: PropertyManager.DisplayName
+    - name: PropertyManager.ContactNo
+      path: PropertyManager.ContactNo
+    - name: PropertyManager.IsDeleted
+      path: PropertyManager.IsDeleted
+    - name: PropertyManager.Brand.Id
+      path: PropertyManager.Brand.Id
+    - name: PropertyManager.Brand.Name
+      path: PropertyManager.Brand.Name
+    - name: PropertyManager.UpdateDate
+      path: PropertyManager.UpdateDate
+    - name: Warranties
+      path: Warranties
+    watermark_column: UpdateDate
+    source_filter: null
+    incremental: false
+  fixflo_issues:
+    system: fixflo
+    source_endpoint: GET /Issues?UpdatedSince={watermark}&page={n} returns issue URLs, then GET /Issue/{Id} for each
+    expected_rows: 56756
+    fetch:
+      method: fixflo_issue_urls
+      path: /Issues
+      page_param: page
+    columns:
+    - name: Id
+      path: Id
+    - name: TenantId
+      path: TenantId
+    - name: ExternalRefTenancyAgreement
+      path: ExternalRefTenancyAgreement
+    - name: Title
+      path: Title
+    - name: FaultTitle
+      path: FaultTitle
+    - name: FaultCategory
+      path: FaultCategory
+    - name: AdditionalDetails
+      path: AdditionalDetails
+    - name: Media
+      path: Media
+    - name: FaultNotes
+      path: FaultNotes
+    - name: FaultPriority
+      path: FaultPriority
+    - name: Salutation
+      path: Salutation
+    - name: Firstname
+      path: Firstname
+    - name: Surname
+      path: Surname
+    - name: EmailAddress
+      path: EmailAddress
+    - name: Address.AddressLine1
+      path: Address.AddressLine1
+    - name: Address.AddressLine2
+      path: Address.AddressLine2
+    - name: Address.Town
+      path: Address.Town
+    - name: Address.County
+      path: Address.County
+    - name: Address.PostCode
+      path: Address.PostCode
+    - name: Address.Country
+      path: Address.Country
+    - name: TenantNotes
+      path: TenantNotes
+    - name: StatusChanged
+      path: StatusChanged
+    - name: Status
+      path: Status
+    - name: Created
+      path: Created
+    - name: TenantPresenceRequested
+      path: TenantPresenceRequested
+    - name: TenantAcceptComplete
+      path: TenantAcceptComplete
+    - name: TermsAccepted
+      path: TermsAccepted
+    - name: CallbackId
+      path: CallbackId
+    - name: Property
+      path: Property
+    - name: Block.Id
+      path: Block.Id
+    - name: Block.ExternalBlockReference
+      path: Block.ExternalBlockReference
+    - name: Block.Name
+      path: Block.Name
+    - name: Block.Address.AddressLine1
+      path: Block.Address.AddressLine1
+    - name: Block.Address.AddressLine2
+      path: Block.Address.AddressLine2
+    - name: Block.Address.Town
+      path: Block.Address.Town
+    - name: Block.Address.County
+      path: Block.Address.County
+    - name: Block.Address.PostCode
+      path: Block.Address.PostCode
+    - name: Block.Address.Country
+      path: Block.Address.Country
+    - name: Block.IsStandAlone
+      path: Block.IsStandAlone
+    - name: Block.KeyReference
+      path: Block.KeyReference
+    - name: Block.ManagementStartDate
+      path: Block.ManagementStartDate
+    - name: Block.ManagementEndDate
+      path: Block.ManagementEndDate
+    - name: Block.EstateId
+      path: Block.EstateId
+    - name: Block.ExternalEstateRef
+      path: Block.ExternalEstateRef
+    - name: Block.LandlordId
+      path: Block.LandlordId
+    - name: Block.ExternalLandlordRef
+      path: Block.ExternalLandlordRef
+    - name: Block.PropertyManager.Id
+      path: Block.PropertyManager.Id
+    - name: Block.PropertyManager.ExternalRef
+      path: Block.PropertyManager.ExternalRef
+    - name: Block.PropertyManager.EmailAddress
+      path: Block.PropertyManager.EmailAddress
+    - name: Block.PropertyManager.DisplayName
+      path: Block.PropertyManager.DisplayName
+    - name: Block.PropertyManager.ContactNo
+      path: Block.PropertyManager.ContactNo
+    - name: Block.PropertyManager.IsDeleted
+      path: Block.PropertyManager.IsDeleted
+    - name: Block.PropertyManager.Brand.Id
+      path: Block.PropertyManager.Brand.Id
+    - name: Block.PropertyManager.Brand.Name
+      path: Block.PropertyManager.Brand.Name
+    - name: Block.PropertyManager.UpdateDate
+      path: Block.PropertyManager.UpdateDate
+    - name: Block.AssignedAgent.Id
+      path: Block.AssignedAgent.Id
+    - name: Block.AssignedAgent.ExternalRef
+      path: Block.AssignedAgent.ExternalRef
+    - name: Block.AssignedAgent.EmailAddress
+      path: Block.AssignedAgent.EmailAddress
+    - name: Block.AssignedAgent.DisplayName
+      path: Block.AssignedAgent.DisplayName
+    - name: Block.AssignedAgent.ContactNo
+      path: Block.AssignedAgent.ContactNo
+    - name: Block.AssignedAgent.IsDeleted
+      path: Block.AssignedAgent.IsDeleted
+    - name: Block.AssignedAgent.Brand.Id
+      path: Block.AssignedAgent.Brand.Id
+    - name: Block.AssignedAgent.Brand.Name
+      path: Block.AssignedAgent.Brand.Name
+    - name: Block.AssignedAgent.UpdateDate
+      path: Block.AssignedAgent.UpdateDate
+    - name: Block.IsDeleted
+      path: Block.IsDeleted
+    - name: Block.Created
+      path: Block.Created
+    - name: Block.UpdateDate
+      path: Block.UpdateDate
+    - name: Block.Warranties
+      path: Block.Warranties
+    - name: Job.id
+      path: Job.id
+    - name: Job.IssueId
+      path: Job.IssueId
+    - name: Job.TenantNotes
+      path: Job.TenantNotes
+    - name: Job.JobberNotes
+      path: Job.JobberNotes
+    - name: Job.StartDate
+      path: Job.StartDate
+    - name: Job.ExternalRefJob
+      path: Job.ExternalRefJob
+    - name: Job.PriceAgencyPayableGross
+      path: Job.PriceAgencyPayableGross
+    - name: Job.PriceAgencyPayableNet
+      path: Job.PriceAgencyPayableNet
+    - name: Job.PriceAgencyPayableTax
+      path: Job.PriceAgencyPayableTax
+    - name: Job.PriceAgencyReceivableGross
+      path: Job.PriceAgencyReceivableGross
+    - name: Job.PriceAgencyReceivableNet
+      path: Job.PriceAgencyReceivableNet
+    - name: Job.PriceAgencyReceivableTax
+      path: Job.PriceAgencyReceivableTax
+    - name: Job.JobInvoiceNumber
+      path: Job.JobInvoiceNumber
+    - name: Job.QuotedPriceAgencyPayableGross
+      path: Job.QuotedPriceAgencyPayableGross
+    - name: Job.QuotedPriceAgencyPayableNet
+      path: Job.QuotedPriceAgencyPayableNet
+    - name: Job.QuotedPriceAgencyPayableTax
+      path: Job.QuotedPriceAgencyPayableTax
+    - name: Job.QuotedPriceAgencyReceivableGross
+      path: Job.QuotedPriceAgencyReceivableGross
+    - name: Job.QuotedPriceAgencyReceivableNet
+      path: Job.QuotedPriceAgencyReceivableNet
+    - name: Job.QuotedPriceAgencyReceivableTax
+      path: Job.QuotedPriceAgencyReceivableTax
+    - name: Job.AppointmentDescription
+      path: Job.AppointmentDescription
+    - name: Job.AppointmentRange
+      path: Job.AppointmentRange
+    - name: Job.CreatedDate
+      path: Job.CreatedDate
+    - name: Job.JobCompleted
+      path: Job.JobCompleted
+    - name: Job.JobDuration
+      path: Job.JobDuration
+    - name: Job.TenantAcceptedStartDate
+      path: Job.TenantAcceptedStartDate
+    - name: Job.JobberAgreedWithTenantStartDate
+      path: Job.JobberAgreedWithTenantStartDate
+    - name: Job.LandlordApproval
+      path: Job.LandlordApproval
+    - name: Job.InsurerApproval
+      path: Job.InsurerApproval
+    - name: Job.Contractor.Id
+      path: Job.Contractor.Id
+    - name: Job.Contractor.ExternalRef
+      path: Job.Contractor.ExternalRef
+    - name: Job.Contractor.CompanyName
+      path: Job.Contractor.CompanyName
+    - name: Job.Contractor.Title
+      path: Job.Contractor.Title
+    - name: Job.Contractor.FirstName
+      path: Job.Contractor.FirstName
+    - name: Job.Contractor.Surname
+      path: Job.Contractor.Surname
+    - name: Job.Contractor.DisplayName
+      path: Job.Contractor.DisplayName
+    - name: Job.Contractor.EmailAddress
+      path: Job.Contractor.EmailAddress
+    - name: Job.Contractor.ContactNumber
+      path: Job.Contractor.ContactNumber
+    - name: Job.Contractor.ContactNumberAlt
+      path: Job.Contractor.ContactNumberAlt
+    - name: Job.Contractor.IsDeleted
+      path: Job.Contractor.IsDeleted
+    - name: Job.Contractor.Address.AddressLine1
+      path: Job.Contractor.Address.AddressLine1
+    - name: Job.Contractor.Address.AddressLine2
+      path: Job.Contractor.Address.AddressLine2
+    - name: Job.Contractor.Address.Town
+      path: Job.Contractor.Address.Town
+    - name: Job.Contractor.Address.County
+      path: Job.Contractor.Address.County
+    - name: Job.Contractor.Address.PostCode
+      path: Job.Contractor.Address.PostCode
+    - name: Job.Contractor.Address.Country
+      path: Job.Contractor.Address.Country
+    - name: Job.Contractor.InvoiceDetails
+      path: Job.Contractor.InvoiceDetails
+    - name: Job.Contractor.Services
+      path: Job.Contractor.Services
+    - name: Job.Contractor.Certifications
+      path: Job.Contractor.Certifications
+    - name: Job.Contractor.Brand.Id
+      path: Job.Contractor.Brand.Id
+    - name: Job.Contractor.Brand.Name
+      path: Job.Contractor.Brand.Name
+    - name: Job.Contractor.UpdateDate
+      path: Job.Contractor.UpdateDate
+    - name: Job.ContractorArrivalTime
+      path: Job.ContractorArrivalTime
+    - name: Job.ContractorArrivalDate
+      path: Job.ContractorArrivalDate
+    - name: Job.ContractorDepartureTime
+      path: Job.ContractorDepartureTime
+    - name: Job.ContractorDepartureDate
+      path: Job.ContractorDepartureDate
+    - name: FaultTree
+      path: FaultTree
+    - name: WorksAuthorisationLimit
+      path: WorksAuthorisationLimit
+    - name: BlockName
+      path: BlockName
+    - name: AssignedAgent.Id
+      path: AssignedAgent.Id
+    - name: AssignedAgent.ExternalRef
+      path: AssignedAgent.ExternalRef
+    - name: AssignedAgent.EmailAddress
+      path: AssignedAgent.EmailAddress
+    - name: AssignedAgent.DisplayName
+      path: AssignedAgent.DisplayName
+    - name: AssignedAgent.ContactNo
+      path: AssignedAgent.ContactNo
+    - name: AssignedAgent.IsDeleted
+      path: AssignedAgent.IsDeleted
+    - name: AssignedAgent.Brand.Id
+      path: AssignedAgent.Brand.Id
+    - name: AssignedAgent.Brand.Name
+      path: AssignedAgent.Brand.Name
+    - name: AssignedAgent.UpdateDate
+      path: AssignedAgent.UpdateDate
+    - name: Quotes
+      path: Quotes
+    - name: AttendenceDate
+      path: AttendenceDate
+    - name: QuoteEndTime
+      path: QuoteEndTime
+    - name: IsPlannedMaintenance
+      path: IsPlannedMaintenance
+    - name: ServiceEventId
+      path: ServiceEventId
+    - name: CostCode
+      path: CostCode
+    - name: IsCommunal
+      path: IsCommunal
+    - name: IsEmergency
+      path: IsEmergency
+    - name: IssueType
+      path: IssueType
+    - name: CloseReason
+      path: CloseReason
+    - name: CloseReasonDescription
+      path: CloseReasonDescription
+    watermark_column: StatusChanged
+    source_filter: UpdatedSince
+    incremental: true
+  fixflo_jobs:
+    system: fixflo
+    source_endpoint: GET /Job/{id}  (also nested as Job in GET /Issue/{Id})
+    expected_rows: 51322
+    fetch:
+      method: per_parent
+      parent: fixflo_issues
+      path: /Job/{Job.id}
+      response: object
+      only_if: Job.id
+    columns:
+    - name: id
+      path: id
+    - name: IssueId
+      path: IssueId
+    - name: TenantNotes
+      path: TenantNotes
+    - name: JobberNotes
+      path: JobberNotes
+    - name: StartDate
+      path: StartDate
+    - name: ExternalRefJob
+      path: ExternalRefJob
+    - name: PriceAgencyPayableGross
+      path: PriceAgencyPayableGross
+    - name: PriceAgencyPayableNet
+      path: PriceAgencyPayableNet
+    - name: PriceAgencyPayableTax
+      path: PriceAgencyPayableTax
+    - name: PriceAgencyReceivableGross
+      path: PriceAgencyReceivableGross
+    - name: PriceAgencyReceivableNet
+      path: PriceAgencyReceivableNet
+    - name: PriceAgencyReceivableTax
+      path: PriceAgencyReceivableTax
+    - name: JobInvoiceNumber
+      path: JobInvoiceNumber
+    - name: QuotedPriceAgencyPayableGross
+      path: QuotedPriceAgencyPayableGross
+    - name: QuotedPriceAgencyPayableNet
+      path: QuotedPriceAgencyPayableNet
+    - name: QuotedPriceAgencyPayableTax
+      path: QuotedPriceAgencyPayableTax
+    - name: QuotedPriceAgencyReceivableGross
+      path: QuotedPriceAgencyReceivableGross
+    - name: QuotedPriceAgencyReceivableNet
+      path: QuotedPriceAgencyReceivableNet
+    - name: QuotedPriceAgencyReceivableTax
+      path: QuotedPriceAgencyReceivableTax
+    - name: AppointmentDescription
+      path: AppointmentDescription
+    - name: AppointmentRange
+      path: AppointmentRange
+    - name: CreatedDate
+      path: CreatedDate
+    - name: JobCompleted
+      path: JobCompleted
+    - name: JobDuration
+      path: JobDuration
+    - name: TenantAcceptedStartDate
+      path: TenantAcceptedStartDate
+    - name: JobberAgreedWithTenantStartDate
+      path: JobberAgreedWithTenantStartDate
+    - name: LandlordApproval
+      path: LandlordApproval
+    - name: InsurerApproval
+      path: InsurerApproval
+    - name: Contractor.Id
+      path: Contractor.Id
+    - name: Contractor.ExternalRef
+      path: Contractor.ExternalRef
+    - name: Contractor.CompanyName
+      path: Contractor.CompanyName
+    - name: Contractor.Title
+      path: Contractor.Title
+    - name: Contractor.FirstName
+      path: Contractor.FirstName
+    - name: Contractor.Surname
+      path: Contractor.Surname
+    - name: Contractor.DisplayName
+      path: Contractor.DisplayName
+    - name: Contractor.EmailAddress
+      path: Contractor.EmailAddress
+    - name: Contractor.ContactNumber
+      path: Contractor.ContactNumber
+    - name: Contractor.ContactNumberAlt
+      path: Contractor.ContactNumberAlt
+    - name: Contractor.IsDeleted
+      path: Contractor.IsDeleted
+    - name: Contractor.Address.AddressLine1
+      path: Contractor.Address.AddressLine1
+    - name: Contractor.Address.AddressLine2
+      path: Contractor.Address.AddressLine2
+    - name: Contractor.Address.Town
+      path: Contractor.Address.Town
+    - name: Contractor.Address.County
+      path: Contractor.Address.County
+    - name: Contractor.Address.PostCode
+      path: Contractor.Address.PostCode
+    - name: Contractor.Address.Country
+      path: Contractor.Address.Country
+    - name: Contractor.InvoiceDetails
+      path: Contractor.InvoiceDetails
+    - name: Contractor.Services
+      path: Contractor.Services
+    - name: Contractor.Certifications
+      path: Contractor.Certifications
+    - name: Contractor.Brand.Id
+      path: Contractor.Brand.Id
+    - name: Contractor.Brand.Name
+      path: Contractor.Brand.Name
+    - name: Contractor.UpdateDate
+      path: Contractor.UpdateDate
+    - name: ContractorArrivalTime
+      path: ContractorArrivalTime
+    - name: ContractorArrivalDate
+      path: ContractorArrivalDate
+    - name: ContractorDepartureTime
+      path: ContractorDepartureTime
+    - name: ContractorDepartureDate
+      path: ContractorDepartureDate
+    watermark_column: null
+    source_filter: null
+    incremental: true
+  fixflo_job_completion_details:
+    system: fixflo
+    source_endpoint: GET /Issue/{issueid}/jobcompletiondetails
+    expected_rows: 50906
+    fetch:
+      method: per_parent
+      parent: fixflo_issues
+      path: /Issue/{Id}/jobcompletiondetails
+      response: object
+      only_if: Job.id
+    columns:
+    - name: IssueId
+      from_url: Id
+    - name: PurchaseOrderNumber
+      path: PurchaseOrderNumber
+    - name: JobCompletionDate
+      path: JobCompletionDate
+    - name: JobDuration
+      path: JobDuration
+    - name: FeedbackToAgent
+      path: FeedbackToAgent
+    watermark_column: null
+    source_filter: null
+    incremental: true
+  fixflo_quotes:
+    system: fixflo
+    source_endpoint: GET /Issue/{issueId}/quotes
+    expected_rows: 11269
+    fetch:
+      method: per_parent
+      parent: fixflo_issues
+      path: /Issue/{Id}/quotes
+      response: list
+      only_if: Quotes
+    columns:
+    - name: IssueId
+      from_url: Id
+    - name: id
+      path: id
+    - name: Status
+      path: Status
+    - name: Contractor.Id
+      path: Contractor.Id
+    - name: Contractor.ExternalRef
+      path: Contractor.ExternalRef
+    - name: Contractor.CompanyName
+      path: Contractor.CompanyName
+    - name: Contractor.Title
+      path: Contractor.Title
+    - name: Contractor.FirstName
+      path: Contractor.FirstName
+    - name: Contractor.Surname
+      path: Contractor.Surname
+    - name: Contractor.DisplayName
+      path: Contractor.DisplayName
+    - name: Contractor.EmailAddress
+      path: Contractor.EmailAddress
+    - name: Contractor.ContactNumber
+      path: Contractor.ContactNumber
+    - name: Contractor.ContactNumberAlt
+      path: Contractor.ContactNumberAlt
+    - name: Contractor.IsDeleted
+      path: Contractor.IsDeleted
+    - name: Contractor.Address.AddressLine1
+      path: Contractor.Address.AddressLine1
+    - name: Contractor.Address.AddressLine2
+      path: Contractor.Address.AddressLine2
+    - name: Contractor.Address.Town
+      path: Contractor.Address.Town
+    - name: Contractor.Address.County
+      path: Contractor.Address.County
+    - name: Contractor.Address.PostCode
+      path: Contractor.Address.PostCode
+    - name: Contractor.Address.Country
+      path: Contractor.Address.Country
+    - name: Contractor.InvoiceDetails
+      path: Contractor.InvoiceDetails
+    - name: Contractor.Services
+      path: Contractor.Services
+    - name: Contractor.Certifications
+      path: Contractor.Certifications
+    - name: Contractor.Brand.Id
+      path: Contractor.Brand.Id
+    - name: Contractor.Brand.Name
+      path: Contractor.Brand.Name
+    - name: Contractor.UpdateDate
+      path: Contractor.UpdateDate
+    - name: PriceAgencyPayableGross
+      path: PriceAgencyPayableGross
+    - name: PriceAgencyPayableNet
+      path: PriceAgencyPayableNet
+    - name: PriceAgencyPayableTax
+      path: PriceAgencyPayableTax
+    - name: PriceAgencyReceivableGross
+      path: PriceAgencyReceivableGross
+    - name: PriceAgencyReceivableNet
+      path: PriceAgencyReceivableNet
+    - name: PriceAgencyReceivableTax
+      path: PriceAgencyReceivableTax
+    - name: SubmittedDate
+      path: SubmittedDate
+    - name: ExpiryDate
+      path: ExpiryDate
+    - name: Media
+      path: Media
+    - name: LineItems
+      path: LineItems
+    watermark_column: null
+    source_filter: null
+    incremental: true
+  fixflo_contractors:
+    system: fixflo
+    source_endpoint: 'GET /Contractors  (one: GET /Contractor/{id})'
+    expected_rows: 175
+    fetch:
+      method: list
+      path: /Contractors
+    columns:
+    - name: Id
+      path: Id
+    - name: ExternalRef
+      path: ExternalRef
+    - name: CompanyName
+      path: CompanyName
+    - name: Title
+      path: Title
+    - name: FirstName
+      path: FirstName
+    - name: Surname
+      path: Surname
+    - name: DisplayName
+      path: DisplayName
+    - name: EmailAddress
+      path: EmailAddress
+    - name: ContactNumber
+      path: ContactNumber
+    - name: ContactNumberAlt
+      path: ContactNumberAlt
+    - name: IsDeleted
+      path: IsDeleted
+    - name: Address.AddressLine1
+      path: Address.AddressLine1
+    - name: Address.AddressLine2
+      path: Address.AddressLine2
+    - name: Address.Town
+      path: Address.Town
+    - name: Address.County
+      path: Address.County
+    - name: Address.PostCode
+      path: Address.PostCode
+    - name: Address.Country
+      path: Address.Country
+    - name: InvoiceDetails
+      path: InvoiceDetails
+    - name: Services
+      path: Services
+    - name: Certifications
+      path: Certifications
+    - name: Brand.Id
+      path: Brand.Id
+    - name: Brand.Name
+      path: Brand.Name
+    - name: UpdateDate
+      path: UpdateDate
+    watermark_column: UpdateDate
+    source_filter: null
+    incremental: false
+  fixflo_blocks:
+    system: fixflo
+    source_endpoint: 'GET /Blocks  (one: GET /Block)'
+    expected_rows: 93
+    fetch:
+      method: list
+      path: /Blocks
+    columns:
+    - name: Id
+      path: Id
+    - name: ExternalBlockReference
+      path: ExternalBlockReference
+    - name: Name
+      path: Name
+    - name: Address.AddressLine1
+      path: Address.AddressLine1
+    - name: Address.AddressLine2
+      path: Address.AddressLine2
+    - name: Address.Town
+      path: Address.Town
+    - name: Address.County
+      path: Address.County
+    - name: Address.PostCode
+      path: Address.PostCode
+    - name: Address.Country
+      path: Address.Country
+    - name: IsStandAlone
+      path: IsStandAlone
+    - name: KeyReference
+      path: KeyReference
+    - name: ManagementStartDate
+      path: ManagementStartDate
+    - name: ManagementEndDate
+      path: ManagementEndDate
+    - name: EstateId
+      path: EstateId
+    - name: ExternalEstateRef
+      path: ExternalEstateRef
+    - name: LandlordId
+      path: LandlordId
+    - name: ExternalLandlordRef
+      path: ExternalLandlordRef
+    - name: PropertyManager.Id
+      path: PropertyManager.Id
+    - name: PropertyManager.ExternalRef
+      path: PropertyManager.ExternalRef
+    - name: PropertyManager.EmailAddress
+      path: PropertyManager.EmailAddress
+    - name: PropertyManager.DisplayName
+      path: PropertyManager.DisplayName
+    - name: PropertyManager.ContactNo
+      path: PropertyManager.ContactNo
+    - name: PropertyManager.IsDeleted
+      path: PropertyManager.IsDeleted
+    - name: PropertyManager.Brand.Id
+      path: PropertyManager.Brand.Id
+    - name: PropertyManager.Brand.Name
+      path: PropertyManager.Brand.Name
+    - name: PropertyManager.UpdateDate
+      path: PropertyManager.UpdateDate
+    - name: AssignedAgent.Id
+      path: AssignedAgent.Id
+    - name: AssignedAgent.ExternalRef
+      path: AssignedAgent.ExternalRef
+    - name: AssignedAgent.EmailAddress
+      path: AssignedAgent.EmailAddress
+    - name: AssignedAgent.DisplayName
+      path: AssignedAgent.DisplayName
+    - name: AssignedAgent.ContactNo
+      path: AssignedAgent.ContactNo
+    - name: AssignedAgent.IsDeleted
+      path: AssignedAgent.IsDeleted
+    - name: AssignedAgent.Brand.Id
+      path: AssignedAgent.Brand.Id
+    - name: AssignedAgent.Brand.Name
+      path: AssignedAgent.Brand.Name
+    - name: AssignedAgent.UpdateDate
+      path: AssignedAgent.UpdateDate
+    - name: IsDeleted
+      path: IsDeleted
+    - name: Created
+      path: Created
+    - name: UpdateDate
+      path: UpdateDate
+    - name: Warranties
+      path: Warranties
+    watermark_column: UpdateDate
+    source_filter: null
+    incremental: false
+  fixflo_agents:
+    system: fixflo
+    source_endpoint: 'GET /Agents  (one: GET /Agent)'
+    expected_rows: 103
+    fetch:
+      method: list
+      path: /Agents
+    columns:
+    - name: Id
+      path: Id
+    - name: ExternalRef
+      path: ExternalRef
+    - name: EmailAddress
+      path: EmailAddress
+    - name: DisplayName
+      path: DisplayName
+    - name: ContactNo
+      path: ContactNo
+    - name: IsDeleted
+      path: IsDeleted
+    - name: Brand.Id
+      path: Brand.Id
+    - name: Brand.Name
+      path: Brand.Name
+    - name: UpdateDate
+      path: UpdateDate
+    watermark_column: UpdateDate
+    source_filter: null
+    incremental: false
+  engage_negotiators:
+    system: engage
+    source_endpoint: GET https://[EngageDomain]/engage/api/v1/negotiators/{NegotiatorCode}
+    expected_rows: 45
+    fetch:
+      method: collection
+      path: /engage/api/v1/negotiators
+    key: NegotiatorCode
+    columns:
+    - name: NegotiatorCode
+      path: NegotiatorCode
+    - name: FirstName
+      path: FirstName
+    - name: LastName
+      path: LastName
+    - name: Email
+      path: Email
+    - name: Active
+      path: Active
+    watermark_column: null
+    source_filter: null
+    incremental: false
+  engage_applicants:
+    system: engage
+    source_endpoint: GET https://[EngageDomain]/engage/api/v1/applicants/{ApplicantId}
+    expected_rows: 42023
+    fetch:
+      method: collection
+      path: /engage/api/v1/applicants
+    key: ApplicantId
+    columns:
+    - name: ApplicantId
+      path: ApplicantId
+    - name: ApplicantType
+      path: ApplicantType
+    - name: FirstName
+      path: FirstName
+    - name: LastName
+      path: LastName
+    - name: Email
+      path: Email
+    - name: Mobile
+      path: Mobile
+    - name: RegisteredDate
+      path: RegisteredDate
+    - name: PreferredTown
+      path: PreferredTown
+    - name: MinBedrooms
+      path: MinBedrooms
+    - name: MaxBudget
+      path: MaxBudget
+    - name: Status
+      path: Status
+    - name: NegotiatorCode
+      path: NegotiatorCode
+    watermark_column: null
+    source_filter: null
+    incremental: false
+  engage_listings:
+    system: engage
+    source_endpoint: GET https://[EngageDomain]/engage/api/v1/listings/{ListingId}
+    expected_rows: 12142
+    fetch:
+      method: collection
+      path: /engage/api/v1/listings
+    key: ListingId
+    columns:
+    - name: ListingId
+      path: ListingId
+    - name: QubePropertyRef
+      path: QubePropertyRef
+    - name: ListingType
+      path: ListingType
+    - name: ListedDate
+      path: ListedDate
+    - name: AskingRentPCM
+      path: AskingRentPCM
+    - name: AskingPrice
+      path: AskingPrice
+    - name: ListingStatus
+      path: ListingStatus
+    - name: AgreedDate
+      path: AgreedDate
+    - name: CompletionDate
+      path: CompletionDate
+    - name: AchievedRentPCM
+      path: AchievedRentPCM
+    - name: AchievedPrice
+      path: AchievedPrice
+    - name: NegotiatorCode
+      path: NegotiatorCode
+    - name: WithdrawnDate
+      path: WithdrawnDate
+    watermark_column: null
+    source_filter: null
+    incremental: false
+  engage_viewings:
+    system: engage
+    source_endpoint: GET https://[EngageDomain]/engage/api/v1/listings/{ListingId}/viewings
+    expected_rows: 65918
+    fetch:
+      method: per_parent
+      parent: engage_listings
+      path: /engage/api/v1/listings/{ListingId}/viewings
+      response: mri_v1
+    columns:
+    - name: ViewingId
+      path: ViewingId
+    - name: ListingId
+      path: ListingId
+    - name: ApplicantId
+      path: ApplicantId
+    - name: ViewingDate
+      path: ViewingDate
+    - name: Outcome
+      path: Outcome
+    - name: NegotiatorCode
+      path: NegotiatorCode
+    watermark_column: null
+    source_filter: null
+    incremental: false
+  engage_offers:
+    system: engage
+    source_endpoint: GET https://[EngageDomain]/engage/api/v1/listings/{ListingId}/offers
+    expected_rows: 22663
+    fetch:
+      method: per_parent
+      parent: engage_listings
+      path: /engage/api/v1/listings/{ListingId}/offers
+      response: mri_v1
+    columns:
+    - name: OfferId
+      path: OfferId
+    - name: ListingId
+      path: ListingId
+    - name: ApplicantId
+      path: ApplicantId
+    - name: OfferDate
+      path: OfferDate
+    - name: OfferAmount
+      path: OfferAmount
+    - name: OfferStatus
+      path: OfferStatus
+    watermark_column: null
+    source_filter: null
+    incremental: false
+  dim_calendar:
+    system: null
+    source_endpoint: Built in Fabric (no API)
+    expected_rows: 2556
+    fetch:
+      method: none
+      reason: Built in Fabric (no API)
+    columns: []
+    watermark_column: null
+    source_filter: null
+    incremental: false

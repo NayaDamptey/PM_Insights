@@ -1,0 +1,270 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "671a2d86b25079e3769e",
+  "position": {
+    "x": 20,
+    "y": 100,
+    "z": 0,
+    "height": 136,
+    "width": 1880,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_tenancy"
+                    }
+                  },
+                  "Property": "Homes Held"
+                }
+              },
+              "queryRef": "fact_tenancy.Homes Held",
+              "nativeQueryRef": "Homes Held"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_tenancy"
+                    }
+                  },
+                  "Property": "Current Tenants"
+                }
+              },
+              "queryRef": "fact_tenancy.Current Tenants",
+              "nativeQueryRef": "Current Tenants"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_tenancy"
+                    }
+                  },
+                  "Property": "Void Rate Today (PRS)"
+                }
+              },
+              "queryRef": "fact_tenancy.Void Rate Today (PRS)",
+              "nativeQueryRef": "Void Rate Today (PRS)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_lettings_funnel"
+                    }
+                  },
+                  "Property": "Avg Days to Move In"
+                }
+              },
+              "queryRef": "fact_lettings_funnel.Avg Days to Move In",
+              "nativeQueryRef": "Avg Days to Move In"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_tenancy"
+                    }
+                  },
+                  "Property": "Renewal Rate"
+                }
+              },
+              "queryRef": "fact_tenancy.Renewal Rate",
+              "nativeQueryRef": "Renewal Rate"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_tenancy"
+                    }
+                  },
+                  "Property": "Staircasing Rate"
+                }
+              },
+              "queryRef": "fact_tenancy.Staircasing Rate",
+              "nativeQueryRef": "Staircasing Rate"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_tenancy"
+                    }
+                  },
+                  "Property": "Stale Duplicate Homes"
+                }
+              },
+              "queryRef": "fact_tenancy.Stale Duplicate Homes",
+              "nativeQueryRef": "Stale Duplicate Homes"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "value": [
+        {
+          "properties": {
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
+          }
+        }
+      ],
+      "label": [
+        {
+          "properties": {
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#A5D6A7'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "c54c51af314cb6c98039",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fact_tenancy"
+              }
+            },
+            "Property": "Homes Held"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "53437b488d66899cef95",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fact_tenancy"
+              }
+            },
+            "Property": "Current Tenants"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "9929b5e7804c18525199",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fact_tenancy"
+              }
+            },
+            "Property": "Void Rate Today (PRS)"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "4e9e3412fe5e0bfb1150",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fact_lettings_funnel"
+              }
+            },
+            "Property": "Avg Days to Move In"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "b31e7170e992e6edbfed",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fact_tenancy"
+              }
+            },
+            "Property": "Renewal Rate"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "5c063024e1b66df7e3e4",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fact_tenancy"
+              }
+            },
+            "Property": "Staircasing Rate"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "d8780ed1376960d6e350",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fact_tenancy"
+              }
+            },
+            "Property": "Stale Duplicate Homes"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

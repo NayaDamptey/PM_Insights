@@ -1,0 +1,27 @@
+[project]
+name = "property-manager-insights"
+version = "0.1.0"
+requires-python = ">=3.11"
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+# Generated from fabric/notebooks/src; lint the source instead.
+extend-exclude = ["*.ipynb"]
+# Globals that the Fabric notebook runtime provides.
+builtins = ["spark", "notebookutils", "mssparkutils", "display", "get_ipython"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff.lint.per-file-ignores]
+# Notebook cells import where they are used, like any notebook.
+"fabric/notebooks/src/*" = ["E402", "E501"]  # SQL inside f-strings reads better unwrapped
+"powerbi/build_measures.py" = ["E501"]  # DAX expressions read better on one line

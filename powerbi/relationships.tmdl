@@ -1,0 +1,179 @@
+createOrReplace
+
+	relationship fact_rent_transaction_date_key_dim_date
+		fromColumn: fact_rent_transaction.date_key
+		toColumn: dim_date.date_key
+
+	relationship fact_arrears_monthly_month_key_dim_date
+		fromColumn: fact_arrears_monthly.month_key
+		toColumn: dim_date.date_key
+
+	relationship fact_payment_timing_paid_date_key_dim_date
+		fromColumn: fact_payment_timing.paid_date_key
+		toColumn: dim_date.date_key
+
+	relationship fact_tenancy_start_date_key_dim_date
+		fromColumn: fact_tenancy.start_date_key
+		toColumn: dim_date.date_key
+
+	relationship fact_tenancy_end_date_key_dim_date
+		isActive: false
+		fromColumn: fact_tenancy.end_date_key
+		toColumn: dim_date.date_key
+
+	relationship fact_occupancy_monthly_month_key_dim_date
+		fromColumn: fact_occupancy_monthly.month_key
+		toColumn: dim_date.date_key
+
+	relationship fact_void_period_void_start_key_dim_date
+		fromColumn: fact_void_period.void_start_key
+		toColumn: dim_date.date_key
+
+	relationship fact_ownership_share_effective_from_key_dim_date
+		fromColumn: fact_ownership_share.effective_from_key
+		toColumn: dim_date.date_key
+
+	relationship fact_repair_job_created_date_key_dim_date
+		fromColumn: fact_repair_job.created_date_key
+		toColumn: dim_date.date_key
+
+	relationship fact_lettings_funnel_listed_date_key_dim_date
+		fromColumn: fact_lettings_funnel.listed_date_key
+		toColumn: dim_date.date_key
+
+	relationship fact_lettings_funnel_agreed_date_key_dim_date
+		isActive: false
+		fromColumn: fact_lettings_funnel.agreed_date_key
+		toColumn: dim_date.date_key
+
+	relationship fact_viewing_viewing_date_key_dim_date
+		fromColumn: fact_viewing.viewing_date_key
+		toColumn: dim_date.date_key
+
+	relationship fact_offer_offer_date_key_dim_date
+		fromColumn: fact_offer.offer_date_key
+		toColumn: dim_date.date_key
+
+	relationship fact_purchase_invoice_invoice_date_key_dim_date
+		fromColumn: fact_purchase_invoice.invoice_date_key
+		toColumn: dim_date.date_key
+
+	relationship fact_rent_transaction_property_key_dim_property
+		fromColumn: fact_rent_transaction.property_key
+		toColumn: dim_property.property_key
+
+	relationship fact_arrears_monthly_property_key_dim_property
+		fromColumn: fact_arrears_monthly.property_key
+		toColumn: dim_property.property_key
+
+	relationship fact_arrears_aged_property_key_dim_property
+		fromColumn: fact_arrears_aged.property_key
+		toColumn: dim_property.property_key
+
+	relationship fact_payment_timing_property_key_dim_property
+		fromColumn: fact_payment_timing.property_key
+		toColumn: dim_property.property_key
+
+	relationship fact_tenancy_property_key_dim_property
+		fromColumn: fact_tenancy.property_key
+		toColumn: dim_property.property_key
+
+	relationship fact_occupancy_monthly_property_key_dim_property
+		fromColumn: fact_occupancy_monthly.property_key
+		toColumn: dim_property.property_key
+
+	relationship fact_void_period_property_key_dim_property
+		fromColumn: fact_void_period.property_key
+		toColumn: dim_property.property_key
+
+	relationship fact_ownership_share_property_key_dim_property
+		fromColumn: fact_ownership_share.property_key
+		toColumn: dim_property.property_key
+
+	relationship fact_arrears_risk_property_key_dim_property
+		fromColumn: fact_arrears_risk.property_key
+		toColumn: dim_property.property_key
+
+	relationship fact_repair_job_property_key_dim_property
+		fromColumn: fact_repair_job.property_key
+		toColumn: dim_property.property_key
+
+	relationship fact_compliance_status_property_key_dim_property
+		fromColumn: fact_compliance_status.property_key
+		toColumn: dim_property.property_key
+
+	relationship fact_lettings_funnel_property_key_dim_property
+		fromColumn: fact_lettings_funnel.property_key
+		toColumn: dim_property.property_key
+
+	relationship fact_viewing_property_key_dim_property
+		fromColumn: fact_viewing.property_key
+		toColumn: dim_property.property_key
+
+	relationship fact_offer_property_key_dim_property
+		fromColumn: fact_offer.property_key
+		toColumn: dim_property.property_key
+
+	relationship fact_purchase_invoice_property_key_dim_property
+		fromColumn: fact_purchase_invoice.property_key
+		toColumn: dim_property.property_key
+
+	relationship fact_rent_transaction_tenant_key_dim_tenant
+		fromColumn: fact_rent_transaction.tenant_key
+		toColumn: dim_tenant.tenant_key
+
+	relationship fact_arrears_monthly_tenant_key_dim_tenant
+		fromColumn: fact_arrears_monthly.tenant_key
+		toColumn: dim_tenant.tenant_key
+
+	relationship fact_arrears_aged_tenant_key_dim_tenant
+		fromColumn: fact_arrears_aged.tenant_key
+		toColumn: dim_tenant.tenant_key
+
+	relationship fact_payment_timing_tenant_key_dim_tenant
+		fromColumn: fact_payment_timing.tenant_key
+		toColumn: dim_tenant.tenant_key
+
+	relationship fact_tenancy_tenant_key_dim_tenant
+		fromColumn: fact_tenancy.tenant_key
+		toColumn: dim_tenant.tenant_key
+
+	relationship fact_ownership_share_tenant_key_dim_tenant
+		fromColumn: fact_ownership_share.tenant_key
+		toColumn: dim_tenant.tenant_key
+
+	relationship fact_arrears_risk_tenant_key_dim_tenant
+		fromColumn: fact_arrears_risk.tenant_key
+		toColumn: dim_tenant.tenant_key
+
+	relationship fact_repair_job_supplier_key_dim_supplier
+		fromColumn: fact_repair_job.supplier_key
+		toColumn: dim_supplier.supplier_key
+
+	relationship fact_compliance_status_supplier_key_dim_supplier
+		fromColumn: fact_compliance_status.supplier_key
+		toColumn: dim_supplier.supplier_key
+
+	relationship fact_purchase_invoice_supplier_key_dim_supplier
+		fromColumn: fact_purchase_invoice.supplier_key
+		toColumn: dim_supplier.supplier_key
+
+	relationship fact_lettings_funnel_negotiator_staff_key_dim_staff
+		fromColumn: fact_lettings_funnel.negotiator_staff_key
+		toColumn: dim_staff.staff_key
+
+	relationship fact_viewing_negotiator_staff_key_dim_staff
+		fromColumn: fact_viewing.negotiator_staff_key
+		toColumn: dim_staff.staff_key
+
+	relationship fact_offer_negotiator_staff_key_dim_staff
+		fromColumn: fact_offer.negotiator_staff_key
+		toColumn: dim_staff.staff_key
+
+	relationship fact_viewing_applicant_key_dim_applicant
+		fromColumn: fact_viewing.applicant_key
+		toColumn: dim_applicant.applicant_key
+
+	relationship fact_offer_applicant_key_dim_applicant
+		fromColumn: fact_offer.applicant_key
+		toColumn: dim_applicant.applicant_key

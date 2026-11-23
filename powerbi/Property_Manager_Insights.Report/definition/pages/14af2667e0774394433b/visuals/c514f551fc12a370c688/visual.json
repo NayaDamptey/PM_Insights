@@ -1,0 +1,117 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "c514f551fc12a370c688",
+  "position": {
+    "x": 20,
+    "y": 318,
+    "z": 0,
+    "height": 367.5,
+    "width": 934,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "funnel",
+    "drillFilterOtherVisuals": true,
+    "query": {
+      "queryState": {
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_lettings_funnel"
+                    }
+                  },
+                  "Property": "Avg Viewings per Listing"
+                }
+              },
+              "queryRef": "fact_lettings_funnel.Avg Viewings per Listing",
+              "nativeQueryRef": "Avg Viewings per Listing"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_lettings_funnel"
+                    }
+                  },
+                  "Property": "Avg Attended Viewings per Listing"
+                }
+              },
+              "queryRef": "fact_lettings_funnel.Avg Attended Viewings per Listing",
+              "nativeQueryRef": "Avg Attended Viewings per Listing"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_lettings_funnel"
+                    }
+                  },
+                  "Property": "Avg Offers per Listing"
+                }
+              },
+              "queryRef": "fact_lettings_funnel.Avg Offers per Listing",
+              "nativeQueryRef": "Avg Offers per Listing"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_lettings_funnel"
+                    }
+                  },
+                  "Property": "Avg Lets per Listing"
+                }
+              },
+              "queryRef": "fact_lettings_funnel.Avg Lets per Listing",
+              "nativeQueryRef": "Avg Lets per Listing"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "labels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Lettings funnel: average per property'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

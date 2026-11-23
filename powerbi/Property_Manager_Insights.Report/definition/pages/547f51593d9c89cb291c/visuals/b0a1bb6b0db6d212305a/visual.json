@@ -1,0 +1,260 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "b0a1bb6b0db6d212305a",
+  "position": {
+    "x": 10.105263157894736,
+    "y": 100.04210526315789,
+    "z": 0,
+    "height": 136.42105263157893,
+    "width": 1889.6842105263156,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_rent_transaction"
+                    }
+                  },
+                  "Property": "Revenue Generated"
+                }
+              },
+              "queryRef": "fact_rent_transaction.Revenue Generated",
+              "nativeQueryRef": "Revenue Generated"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_rent_transaction"
+                    }
+                  },
+                  "Property": "Operating Expenses"
+                }
+              },
+              "queryRef": "fact_rent_transaction.Operating Expenses",
+              "nativeQueryRef": "Operating Expenses"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_rent_transaction"
+                    }
+                  },
+                  "Property": "Net Operating Income"
+                }
+              },
+              "queryRef": "fact_rent_transaction.Net Operating Income",
+              "nativeQueryRef": "Net Operating Income"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_rent_transaction"
+                    }
+                  },
+                  "Property": "Operating Cash Flow"
+                }
+              },
+              "queryRef": "fact_rent_transaction.Operating Cash Flow",
+              "nativeQueryRef": "Operating Cash Flow"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_rent_transaction"
+                    }
+                  },
+                  "Property": "Arrears"
+                }
+              },
+              "queryRef": "fact_rent_transaction.Arrears",
+              "nativeQueryRef": "Arrears"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_rent_transaction"
+                    }
+                  },
+                  "Property": "Operating Expense Ratio"
+                }
+              },
+              "queryRef": "fact_rent_transaction.Operating Expense Ratio",
+              "nativeQueryRef": "Operating Expense Ratio"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "fact_rent_transaction"
+                  }
+                },
+                "Property": "Revenue Generated"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "objects": {
+      "value": [
+        {
+          "properties": {
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
+          }
+        }
+      ],
+      "label": [
+        {
+          "properties": {
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#A5D6A7'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "dfa3a79b10bf2ad092d8",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fact_rent_transaction"
+              }
+            },
+            "Property": "Revenue Generated"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "6d34aeb3baaebaabcaf0",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fact_rent_transaction"
+              }
+            },
+            "Property": "Operating Expenses"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "443ef5bf1204d2e33050",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fact_rent_transaction"
+              }
+            },
+            "Property": "Net Operating Income"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "97b63b4efb606b5b3b69",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fact_rent_transaction"
+              }
+            },
+            "Property": "Operating Cash Flow"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "8bb2c1edc81c6140366f",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fact_rent_transaction"
+              }
+            },
+            "Property": "Arrears"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "fff9b3a383609e68be29",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fact_rent_transaction"
+              }
+            },
+            "Property": "Operating Expense Ratio"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

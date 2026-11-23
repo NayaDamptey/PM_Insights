@@ -1,0 +1,631 @@
+createOrReplace
+
+	ref table fact_rent_transaction
+
+		/// Rent, service charge, ground rent and recharges billed in the period.
+		measure 'Revenue Generated' = SUM ( fact_rent_transaction[charged] )
+			formatString: £#,0
+			displayFolder: Finance
+
+		/// Rent billed in the period.
+		measure 'Rent Charged' = CALCULATE ( [Revenue Generated], fact_rent_transaction[transaction_type] = "Rent charge" )
+			formatString: £#,0
+			displayFolder: Finance
+
+		/// Service charge billed in the period.
+		measure 'Service Charge Charged' = CALCULATE ( [Revenue Generated], fact_rent_transaction[transaction_type] = "Service charge" )
+			formatString: £#,0
+			displayFolder: Finance
+
+		/// Ground rent billed in the period.
+		measure 'Ground Rent Charged' = CALCULATE ( [Revenue Generated], fact_rent_transaction[transaction_type] = "Ground rent" )
+			formatString: £#,0
+			displayFolder: Finance
+
+		/// Rent receipts in the period.
+		measure Received = SUM ( fact_rent_transaction[paid] )
+			formatString: £#,0
+			displayFolder: Finance
+
+		/// Received ÷ charged.
+		measure 'Collection Rate' = DIVIDE ( [Received], [Revenue Generated] )
+			formatString: 0.0%
+			displayFolder: Finance
+
+		/// Latest date with a ledger line in the current filters.
+		measure 'Last Ledger Date' = CALCULATE ( MAX ( dim_date[date] ), fact_rent_transaction )
+			formatString: dd mmm yyyy
+			displayFolder: Finance
+
+		/// Financial year to date (April to March).
+		measure 'Revenue Generated FYTD' = TOTALYTD ( [Revenue Generated], dim_date[date], "3/31" )
+			formatString: £#,0
+			displayFolder: Finance
+
+		/// Same period last year.
+		measure 'Revenue Generated LY' = CALCULATE ( [Revenue Generated], SAMEPERIODLASTYEAR ( dim_date[date] ) )
+			formatString: £#,0
+			displayFolder: Finance
+
+		/// Change against the same period last year.
+		measure 'Revenue vs LY %' = DIVIDE ( [Revenue Generated] - [Revenue Generated LY], [Revenue Generated LY] )
+			formatString: 0.0%
+			displayFolder: Finance
+
+		/// Twelve months up to the latest ledger date.
+		measure 'Revenue Last 12 Months' = CALCULATE ( [Revenue Generated], DATESINPERIOD ( dim_date[date], [Last Ledger Date], -12, MONTH ) )
+			formatString: £#,0
+			displayFolder: Finance
+
+		/// Amount owed at the end of the latest month in the filters (a balance, so it is not summed across months).
+		measure Arrears =
+				VAR LastMonth = MAX ( fact_arrears_monthly[month_key] )
+				RETURN
+				    CALCULATE (
+				        SUM ( fact_arrears_monthly[arrears] ),
+				        REMOVEFILTERS ( dim_date ),
+				        fact_arrears_monthly[month_key] = LastMonth
+				    )
+			formatString: £#,0
+			displayFolder: Finance
+
+		/// Arrears of tenancies still live.
+		measure 'Current Tenant Arrears' = CALCULATE ( [Arrears], fact_arrears_monthly[is_current_tenant] = TRUE () )
+			formatString: £#,0
+			displayFolder: Finance
+
+		/// Debt left by tenants who have moved out.
+		measure 'Former Tenant Arrears' = CALCULATE ( [Arrears], fact_arrears_monthly[is_current_tenant] = FALSE () )
+			formatString: £#,0
+			displayFolder: Finance
+
+		/// Tenancies owing money at the end of the latest month in the filters.
+		measure 'Tenancies in Arrears' =
+				VAR LastMonth = MAX ( fact_arrears_monthly[month_key] )
+				RETURN
+				    CALCULATE (
+				        COUNTROWS ( fact_arrears_monthly ),
+				        REMOVEFILTERS ( dim_date ),
+				        fact_arrears_monthly[month_key] = LastMonth,
+				        fact_arrears_monthly[arrears] > 0
+				    )
+			formatString: #,0
+			displayFolder: Finance
+
+		/// Annual rent of live tenancies.
+		measure 'Rent Roll (annual)' = CALCULATE ( SUM ( fact_tenancy[rent_pcm] ) * 12, fact_tenancy[is_live] = TRUE (), REMOVEFILTERS ( dim_date ) )
+			formatString: £#,0
+			displayFolder: Finance
+
+		/// Current tenant arrears ÷ annual rent roll.
+		measure 'Arrears % of Rent Roll' = DIVIDE ( [Current Tenant Arrears], [Rent Roll (annual)] )
+			formatString: 0.0%
+			displayFolder: Finance
+
+		/// Arrears today by how long they have been owed (use with fact_arrears_aged[age_band]).
+		measure 'Aged Arrears' = SUM ( fact_arrears_aged[arrears] )
+			formatString: £#,0
+			displayFolder: Finance
+
+		/// Debt left by former tenants that is over 90 days old.
+		measure 'Former Tenant Debt 90+ Days' = CALCULATE ( [Aged Arrears], fact_arrears_aged[is_current_tenant] = FALSE (), fact_arrears_aged[age_band] = "90+ days" )
+			formatString: £#,0
+			displayFolder: Finance
+
+		/// Void days × market rent.
+		measure 'Rent Lost to Voids' = SUM ( fact_occupancy_monthly[rent_lost_to_voids] )
+			formatString: £#,0
+			displayFolder: Finance
+
+		/// Financial year to date.
+		measure 'Rent Lost to Voids FYTD' = TOTALYTD ( [Rent Lost to Voids], dim_date[date], "3/31" )
+			formatString: £#,0
+			displayFolder: Finance
+
+		/// Supplier invoices, gross.
+		measure Spend = SUM ( fact_purchase_invoice[gross_amount] )
+			formatString: £#,0
+			displayFolder: Finance
+
+		/// Spend ÷ homes held.
+		measure 'Spend per Home' = DIVIDE ( [Spend], [Homes Held] )
+			formatString: £#,0
+			displayFolder: Finance
+
+		/// Repairs, compliance, block services and insurance invoiced in the period.
+		measure 'Operating Expenses' = [Spend]
+			formatString: £#,0
+			displayFolder: Finance
+
+		/// Revenue charged minus operating expenses.
+		measure 'Net Operating Income' = [Revenue Generated] - [Operating Expenses]
+			formatString: £#,0
+			displayFolder: Finance
+
+		/// Operating expenses ÷ revenue charged; a rising ratio means margins are being squeezed.
+		measure 'Operating Expense Ratio' = DIVIDE ( [Operating Expenses], [Revenue Generated] )
+			formatString: 0.0%
+			displayFolder: Finance
+
+		/// Operating expense ratio for the current calendar year, whatever year is picked in the slicers.
+		measure 'Operating Expense Ratio (This Year)' = CALCULATE ( [Operating Expense Ratio], REMOVEFILTERS ( dim_date ), dim_date[year] = YEAR ( TODAY () ) )
+			formatString: 0.0%
+			displayFolder: Finance
+
+		/// Cost of homes bought in the period (acquisitions are the capital spend in this data).
+		measure 'Capital Expenditure' = CALCULATE ( SUM ( dim_property[acquisition_cost] ), dim_property[is_current] = TRUE (), TREATAS ( VALUES ( dim_date[date] ), dim_property[acquisition_date] ) )
+			formatString: £#,0
+			displayFolder: Finance
+
+		/// Cash received minus operating expenses (before buying homes).
+		measure 'Operating Cash Flow' = [Received] - [Operating Expenses]
+			formatString: £#,0
+			displayFolder: Finance
+
+	ref table fact_tenancy
+
+		/// Homes owned today (current version, not sold).
+		measure 'Homes Held' =
+				CALCULATE (
+				    DISTINCTCOUNT ( dim_property[property_ref] ),
+				    dim_property[is_current] = TRUE (),
+				    dim_property[property_status] <> "Sold",
+				    dim_property[property_ref] <> "Unknown"
+				)
+			formatString: #,0
+			displayFolder: Property management
+
+		/// Live tenancies (households): one per let home, so it equals Homes Let.
+		measure 'Current Tenants' = CALCULATE ( COUNTROWS ( fact_tenancy ), fact_tenancy[is_live] = TRUE (), REMOVEFILTERS ( dim_date ) )
+			formatString: #,0
+			displayFolder: Property management
+
+		/// Rental homes held.
+		measure 'PRS Homes' = CALCULATE ( [Homes Held], dim_property[tenure] = "PRS" )
+			formatString: #,0
+			displayFolder: Property management
+
+		/// Shared Ownership homes held.
+		measure 'Shared Ownership Homes' = CALCULATE ( [Homes Held], dim_property[tenure] = "Shared Ownership" )
+			formatString: #,0
+			displayFolder: Property management
+
+		/// Records that duplicate a home already sold (false actives found by DQ010).
+		measure 'Stale Duplicate Homes' = CALCULATE ( [Homes Held], dim_property[is_stale_duplicate] = TRUE () )
+			formatString: #,0
+			displayFolder: Property management
+
+		/// Workload per manager.
+		measure 'Homes per Property Manager' =
+				DIVIDE (
+				    [Homes Held],
+				    CALCULATE (
+				        DISTINCTCOUNT ( dim_property[manager_staff_code] ),
+				        dim_property[is_current] = TRUE (),
+				        dim_property[property_status] <> "Sold"
+				    )
+				)
+			formatString: #,0.0
+			displayFolder: Property management
+
+		/// Let days ÷ days held, rental homes.
+		measure 'Occupancy Rate (PRS)' = CALCULATE ( DIVIDE ( SUM ( fact_occupancy_monthly[let_days] ), SUM ( fact_occupancy_monthly[held_days] ) ), dim_property[tenure] = "PRS" )
+			formatString: 0.0%
+			displayFolder: Property management
+
+		/// Void days ÷ days held, rental homes.
+		measure 'Void Rate (PRS)' = 1 - [Occupancy Rate (PRS)]
+			formatString: 0.0%
+			displayFolder: Property management
+
+		/// Rental homes empty today.
+		measure 'Current Voids (PRS)' = CALCULATE ( COUNTROWS ( fact_void_period ), fact_void_period[is_current_void] = TRUE (), dim_property[tenure] = "PRS" )
+			formatString: #,0
+			displayFolder: Property management
+
+		/// Rental homes empty today ÷ rental homes.
+		measure 'Void Rate Today (PRS)' = DIVIDE ( [Current Voids (PRS)], [PRS Homes] )
+			formatString: 0.0%
+			displayFolder: Property management
+
+		/// Average gap between tenancies (finished voids).
+		measure 'Avg Void Days' = CALCULATE ( AVERAGE ( fact_void_period[void_days] ), fact_void_period[void_type] = "Between tenancies", fact_void_period[is_current_void] = FALSE () )
+			formatString: #,0.0
+			displayFolder: Property management
+
+		/// Average length of tenancy periods.
+		measure 'Avg Tenancy Length (months)' = AVERAGE ( fact_tenancy[length_months] )
+			formatString: #,0.0
+			displayFolder: Property management
+
+		/// Share of ended tenancy periods that renewed.
+		measure 'Renewal Rate' =
+				DIVIDE (
+				    CALCULATE ( COUNTROWS ( fact_tenancy ), fact_tenancy[end_reason] = "Renewed" ),
+				    CALCULATE ( COUNTROWS ( fact_tenancy ), fact_tenancy[end_reason] IN { "Renewed", "Tenant left" } )
+				)
+			formatString: 0.0%
+			displayFolder: Property management
+
+		/// Rent rise on renewal.
+		measure 'Avg Rent Increase at Renewal' = CALCULATE ( AVERAGE ( fact_tenancy[rent_increase_pct] ), fact_tenancy[renewal_number] > 0 ) / 100
+			formatString: 0.0%
+			displayFolder: Property management
+
+		/// Tenants leaving, by the month they left.
+		measure 'Move-outs' = CALCULATE ( COUNTROWS ( fact_tenancy ), fact_tenancy[end_reason] = "Tenant left", USERELATIONSHIP ( fact_tenancy[end_date_key], dim_date[date_key] ) )
+			formatString: #,0
+			displayFolder: Property management
+
+		/// Current tenancies with a risk score of 50+.
+		measure 'High Risk Tenancies' = CALCULATE ( COUNTROWS ( fact_arrears_risk ), fact_arrears_risk[risk_band] = "High" )
+			formatString: #,0
+			displayFolder: Property management
+
+		/// Average arrears risk score (0-100).
+		measure 'Avg Risk Score' = AVERAGE ( fact_arrears_risk[risk_score] )
+			formatString: #,0.0
+			displayFolder: Property management
+
+		/// Shared owners with an ownership period in the filters.
+		measure 'Shared Owners' = DISTINCTCOUNT ( fact_ownership_share[tenant_key] )
+			formatString: #,0
+			displayFolder: Property management
+
+		/// Shared owners who bought a bigger share.
+		measure 'Owners Who Staircased' = CALCULATE ( DISTINCTCOUNT ( fact_ownership_share[tenant_key] ), fact_ownership_share[event_type] = "Staircasing" )
+			formatString: #,0
+			displayFolder: Property management
+
+		/// Owners who staircased ÷ shared owners.
+		measure 'Staircasing Rate' = DIVIDE ( [Owners Who Staircased], [Shared Owners] )
+			formatString: 0.0%
+			displayFolder: Property management
+
+		/// Share purchases after the first.
+		measure 'Staircasing Events' = CALCULATE ( COUNTROWS ( fact_ownership_share ), fact_ownership_share[event_type] = "Staircasing" )
+			formatString: #,0
+			displayFolder: Property management
+
+		/// Homes whose owner reached 100%.
+		measure 'Homes Fully Staircased' = CALCULATE ( DISTINCTCOUNT ( fact_ownership_share[property_key] ), fact_ownership_share[is_fully_owned] = TRUE () )
+			formatString: #,0
+			displayFolder: Property management
+
+		/// Average current share owned.
+		measure 'Avg Share Owned' = CALCULATE ( AVERAGE ( fact_ownership_share[percentage_share] ), fact_ownership_share[is_current] = TRUE (), REMOVEFILTERS ( dim_date ) ) / 100
+			formatString: 0.0%
+			displayFolder: Property management
+
+		/// From first purchase to first staircase.
+		measure 'Avg Months to First Staircase' = AVERAGE ( fact_ownership_share[months_to_first_staircase] )
+			formatString: #,0.0
+			displayFolder: Property management
+
+		/// Homes owned today that have a tenant (status Let).
+		measure 'Homes Let' = CALCULATE ( [Homes Held], dim_property[property_status] = "Let" )
+			formatString: #,0
+			displayFolder: Property management
+
+		/// Homes bought since 2021 that have left the portfolio (Shared Ownership buy-outs and open-market sales).
+		measure 'Homes Sold' = CALCULATE ( DISTINCTCOUNT ( dim_property[property_ref] ), dim_property[is_current] = TRUE (), dim_property[property_status] = "Sold" )
+			formatString: #,0
+			displayFolder: Property management
+
+		/// 1 if the home is one of its region's 5 rental homes with the longest current tenancy (ties broken by property ref).
+		measure 'Is Top 5 in Region' =
+				VAR ThisRegion = SELECTEDVALUE ( dim_property[region] )
+				VAR ThisHome = SELECTEDVALUE ( dim_property[property_ref] )
+				VAR ThisMonths = [Current Tenancy (months)]
+				VAR Candidates =
+				    CALCULATETABLE (
+				        ADDCOLUMNS ( VALUES ( dim_property[property_ref] ), "@months", [Current Tenancy (months)] ),
+				        REMOVEFILTERS ( dim_property ),
+				        dim_property[region] = ThisRegion,
+				        dim_property[tenure] = "PRS",
+				        dim_property[is_current] = TRUE ()
+				    )
+				VAR Top5 = TOPN ( 5, FILTER ( Candidates, NOT ISBLANK ( [@months] ) ), [@months], DESC, dim_property[property_ref], ASC )
+				-- Homes with no live tenancy can't be in the top 5, so the region ranking (the slow
+				-- part) is only worked out for homes that have one.
+				RETURN
+				    IF (
+				        NOT ISBLANK ( ThisHome ),
+				        IF (
+				            ISBLANK ( ThisMonths ),
+				            0,
+				            IF ( ThisHome IN SELECTCOLUMNS ( Top5, "ref", dim_property[property_ref] ), 1, 0 )
+				        )
+				    )
+			formatString: #,0
+			displayFolder: Property management
+
+		/// Every home bought since 2021, including those since sold.
+		measure 'Homes Acquired' = CALCULATE ( DISTINCTCOUNT ( dim_property[property_ref] ), dim_property[is_current] = TRUE (), dim_property[property_ref] <> "Unknown" )
+			formatString: #,0
+			displayFolder: Property management
+
+		/// Running total of homes bought since 2021, up to the end of each year (or today, for the current year). Sales are not taken off, so it only goes up; blank for future years.
+		measure 'Homes Acquired (cumulative)' =
+				VAR AsAt = MIN ( MAX ( dim_date[date] ), TODAY () )
+				RETURN
+				    IF (
+				        MIN ( dim_date[date] ) <= TODAY (),
+				        CALCULATE (
+				            DISTINCTCOUNT ( dim_property[property_ref] ),
+				            dim_property[is_current] = TRUE (),
+				            dim_property[property_ref] <> "Unknown",
+				            dim_property[acquisition_date] <= AsAt
+				        )
+				    )
+			formatString: #,0
+			displayFolder: Property management
+
+		/// Straight line from the homes acquired so far to the target of 30,000 by 2030. It starts at this year's figure, so it carries on from the Homes Acquired line.
+		measure 'Homes Projected' =
+				VAR ThisYear = YEAR ( TODAY () )
+				VAR Year = MAX ( dim_date[year] )
+				VAR OwnedNow = [Homes Acquired]
+				RETURN
+				    IF ( Year >= ThisYear && Year <= 2030, OwnedNow + ( 30000 - OwnedNow ) * ( Year - ThisYear ) / ( 2030 - ThisYear ) )
+			formatString: #,0
+			displayFolder: Property management
+
+		/// How long the current tenant has lived in the home, renewals included (keeps rolling each month).
+		measure 'Current Tenancy (months)' =
+				VAR LiveJourneys =
+				    CALCULATETABLE ( VALUES ( fact_tenancy[original_tenancy_ref] ), fact_tenancy[is_live] = TRUE () )
+				RETURN
+				    MAXX ( LiveJourneys, CALCULATE ( SUM ( fact_tenancy[length_months] ) ) )
+			formatString: #,0.0
+			displayFolder: Property management
+
+		/// Drawing of the home's property type (data category: Image URL).
+		measure 'Property Picture' =
+				SWITCH (
+				    SELECTEDVALUE ( dim_property[property_type] ),
+				        "House", "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 150'><rect width='240' height='150' rx='12' fill='%23050A07'/><polygon points='60,70 120,30 180,70' fill='%2300E676'/><rect x='72' y='70' width='96' height='60' fill='%23103A27' stroke='%2300E676' stroke-width='3'/><rect x='110' y='95' width='20' height='35' fill='%2300E676'/></svg>",
+				        "Flat", "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 150'><rect width='240' height='150' rx='12' fill='%23050A07'/><rect x='80' y='20' width='80' height='115' fill='%23103A27' stroke='%2300E676' stroke-width='3'/><g fill='%2300E676'><rect x='92' y='32' width='14' height='12'/><rect x='134' y='32' width='14' height='12'/><rect x='92' y='58' width='14' height='12'/><rect x='134' y='58' width='14' height='12'/><rect x='92' y='84' width='14' height='12'/><rect x='134' y='84' width='14' height='12'/><rect x='112' y='110' width='16' height='25'/></g></svg>",
+				        "Townhouse", "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 150'><rect width='240' height='150' rx='12' fill='%23050A07'/><polygon points='85,55 120,25 155,55' fill='%2300E676'/><rect x='92' y='55' width='56' height='80' fill='%23103A27' stroke='%2300E676' stroke-width='3'/><g fill='%2300E676'><rect x='104' y='68' width='12' height='14'/><rect x='124' y='68' width='12' height='14'/><rect x='112' y='105' width='16' height='30'/></g></svg>",
+				        "Bungalow", "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 150'><rect width='240' height='150' rx='12' fill='%23050A07'/><polygon points='40,80 120,50 200,80' fill='%2300E676'/><rect x='52' y='80' width='136' height='50' fill='%23103A27' stroke='%2300E676' stroke-width='3'/><rect x='112' y='100' width='18' height='30' fill='%2300E676'/></svg>",
+				        "Maisonette", "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 150'><rect width='240' height='150' rx='12' fill='%23050A07'/><rect x='70' y='40' width='100' height='95' fill='%23103A27' stroke='%2300E676' stroke-width='3'/><line x1='70' y1='88' x2='170' y2='88' stroke='%2300E676' stroke-width='3'/><g fill='%2300E676'><rect x='85' y='55' width='18' height='16'/><rect x='137' y='55' width='18' height='16'/><rect x='111' y='105' width='18' height='30'/></g></svg>",
+				        "Studio", "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 150'><rect width='240' height='150' rx='12' fill='%23050A07'/><rect x='90' y='60' width='60' height='70' fill='%23103A27' stroke='%2300E676' stroke-width='3'/><rect x='100' y='75' width='16' height='14' fill='%2300E676'/><rect x='124' y='100' width='16' height='30' fill='%2300E676'/></svg>",
+				    "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 150'><rect width='240' height='150' rx='12' fill='%23050A07'/><polygon points='60,70 120,30 180,70' fill='%2300E676'/><rect x='72' y='70' width='96' height='60' fill='%23103A27' stroke='%2300E676' stroke-width='3'/><rect x='110' y='95' width='20' height='35' fill='%2300E676'/></svg>"
+				)
+			dataCategory: ImageUrl
+			displayFolder: Property management
+
+		/// Average monthly rent of live tenancies.
+		measure 'Avg Rent' = CALCULATE ( AVERAGE ( fact_tenancy[rent_pcm] ), fact_tenancy[is_live] = TRUE (), REMOVEFILTERS ( dim_date ) )
+			formatString: £#,0
+			displayFolder: Property management
+
+	ref table fact_repair_job
+
+		/// Jobs created in the period.
+		measure 'Repair Jobs' = COUNTROWS ( fact_repair_job )
+			formatString: #,0
+			displayFolder: Operations\Maintenance
+
+		/// Job created to completed.
+		measure 'Avg Days to Complete' = AVERAGE ( fact_repair_job[days_to_complete] )
+			formatString: #,0.0
+			displayFolder: Operations\Maintenance
+
+		/// Middle value, less skewed by outliers.
+		measure 'Median Days to Complete' = MEDIAN ( fact_repair_job[days_to_complete] )
+			formatString: #,0.0
+			displayFolder: Operations\Maintenance
+
+		/// Latest date a job was created.
+		measure 'Last Job Date' = CALCULATE ( MAX ( dim_date[date] ), fact_repair_job, REMOVEFILTERS ( dim_date ) )
+			formatString: dd mmm yyyy
+			displayFolder: Operations\Maintenance
+
+		/// Active contractors (not insurers) with no jobs in the period.
+		measure 'Contractors Not Used' =
+				COUNTROWS (
+				    FILTER (
+				        dim_supplier,
+				        dim_supplier[is_active] = TRUE ()
+				            && dim_supplier[supplier_key] <> -1
+				            && dim_supplier[trade] <> "Insurance"
+				            && CALCULATE ( COUNTROWS ( fact_repair_job ) ) = 0
+				    )
+				)
+			formatString: #,0
+			displayFolder: Operations\Maintenance
+
+		/// Active contractors with no jobs in the last 12 months.
+		measure 'Contractors Not Used (12 months)' = CALCULATE ( [Contractors Not Used], DATESINPERIOD ( dim_date[date], [Last Job Date], -12, MONTH ) )
+			formatString: #,0
+			displayFolder: Operations\Maintenance
+
+		/// Jobs not completed today.
+		measure 'Open Jobs' = CALCULATE ( COUNTROWS ( fact_repair_job ), fact_repair_job[is_open] = TRUE (), REMOVEFILTERS ( dim_date ) )
+			formatString: #,0
+			displayFolder: Operations\Maintenance
+
+		/// Open jobs older than 15 days.
+		measure 'Jobs Open Over 15 Days' = CALCULATE ( COUNTROWS ( fact_repair_job ), fact_repair_job[is_open_over_15_days] = TRUE (), REMOVEFILTERS ( dim_date ) )
+			formatString: #,0
+			displayFolder: Operations\Maintenance
+
+		/// Contractors holding at least one job open over 15 days.
+		measure 'Contractors With Jobs Open Over 15 Days' = CALCULATE ( DISTINCTCOUNT ( fact_repair_job[supplier_key] ), fact_repair_job[is_open_over_15_days] = TRUE (), REMOVEFILTERS ( dim_date ) )
+			formatString: #,0
+			displayFolder: Operations\Maintenance
+
+		/// Completed jobs followed by a new issue on the same home and fault within 30 days.
+		measure 'Callback Rate' =
+				DIVIDE (
+				    CALCULATE ( COUNTROWS ( fact_repair_job ), fact_repair_job[has_callback_30_days] = TRUE () ),
+				    CALCULATE ( COUNTROWS ( fact_repair_job ), fact_repair_job[is_completed] = TRUE () )
+				)
+			formatString: 0.0%
+			displayFolder: Operations\Maintenance
+
+		/// Gross cost of jobs.
+		measure 'Repair Spend' = SUM ( fact_repair_job[payable_gross] )
+			formatString: £#,0
+			displayFolder: Operations\Maintenance
+
+		/// Required certificates that are valid today.
+		measure 'Compliance %' = DIVIDE ( CALCULATE ( COUNTROWS ( fact_compliance_status ), fact_compliance_status[is_compliant] = TRUE () ), COUNTROWS ( fact_compliance_status ) )
+			formatString: 0.0%
+			displayFolder: Operations\Maintenance
+
+		/// Gas Safety, homes with gas.
+		measure 'Gas Compliance %' = CALCULATE ( [Compliance %], fact_compliance_status[certificate_type] = "Gas Safety Certificate" )
+			formatString: 0.0%
+			displayFolder: Operations\Maintenance
+
+		/// Electrical safety.
+		measure 'EICR Compliance %' = CALCULATE ( [Compliance %], fact_compliance_status[certificate_type] = "EICR" )
+			formatString: 0.0%
+			displayFolder: Operations\Maintenance
+
+		/// Energy performance.
+		measure 'EPC Compliance %' = CALCULATE ( [Compliance %], fact_compliance_status[certificate_type] = "EPC" )
+			formatString: 0.0%
+			displayFolder: Operations\Maintenance
+
+		/// Required certificates past expiry.
+		measure 'Expired Certificates' = CALCULATE ( COUNTROWS ( fact_compliance_status ), fact_compliance_status[status] = "Expired" )
+			formatString: #,0
+			displayFolder: Operations\Maintenance
+
+		/// Required certificates never issued.
+		measure 'Missing Certificates' = CALCULATE ( COUNTROWS ( fact_compliance_status ), fact_compliance_status[status] = "Missing" )
+			formatString: #,0
+			displayFolder: Operations\Maintenance
+
+		/// Due for renewal soon.
+		measure 'Certificates Expiring in 90 Days' = CALCULATE ( COUNTROWS ( fact_compliance_status ), fact_compliance_status[status] IN { "Expires in 30 days", "Expires in 31-60 days", "Expires in 61-90 days" } )
+			formatString: #,0
+			displayFolder: Operations\Maintenance
+
+		/// Homes with an expired or missing certificate.
+		measure 'Homes Not Compliant' = CALCULATE ( DISTINCTCOUNT ( fact_compliance_status[property_key] ), fact_compliance_status[is_compliant] = FALSE () )
+			formatString: #,0
+			displayFolder: Operations\Maintenance
+
+		/// One-line takeaway for the Maintenance page.
+		measure 'Maintenance Insight' =
+				"Jobs take " & FORMAT ( [Avg Days to Complete], "0.0" ) & " days on average; "
+				    & FORMAT ( [Jobs Open Over 15 Days], "#,0" ) & " jobs are open over 15 days across "
+				    & FORMAT ( [Contractors With Jobs Open Over 15 Days], "#,0" ) & " contractors. "
+				    & FORMAT ( [Contractors Not Used (12 months)], "#,0" ) & " active contractors had no work in 12 months. Compliance "
+				    & FORMAT ( [Compliance %], "0.0%" ) & ", " & FORMAT ( [Homes Not Compliant], "#,0" ) & " homes need action."
+			displayFolder: Operations\Maintenance
+
+		/// Certificates rental homes need today (Gas only where there is gas).
+		measure 'Required Certificates' = COUNTROWS ( fact_compliance_status )
+			formatString: #,0
+			displayFolder: Operations\Maintenance
+
+	ref table fact_lettings_funnel
+
+		/// Homes listed in the period.
+		measure Listings = COUNTROWS ( fact_lettings_funnel )
+			formatString: #,0
+			displayFolder: Operations\Lettings
+
+		/// Lets or sales agreed, by agreed date.
+		measure 'Lets Agreed' = CALCULATE ( COUNTROWS ( fact_lettings_funnel ), fact_lettings_funnel[is_agreed] = TRUE (), USERELATIONSHIP ( fact_lettings_funnel[agreed_date_key], dim_date[date_key] ) )
+			formatString: #,0
+			displayFolder: Operations\Lettings
+
+		/// Listed to agreed.
+		measure 'Avg Days to Agree' = AVERAGE ( fact_lettings_funnel[days_to_agree] )
+			formatString: #,0.0
+			displayFolder: Operations\Lettings
+
+		/// Listed to move-in (days to let).
+		measure 'Avg Days to Move In' = AVERAGE ( fact_lettings_funnel[days_to_move_in] )
+			formatString: #,0.0
+			displayFolder: Operations\Lettings
+
+		/// Viewings in the period.
+		measure 'Viewings Booked' = COUNTROWS ( fact_viewing )
+			formatString: #,0
+			displayFolder: Operations\Lettings
+
+		/// Viewings the applicant turned up to.
+		measure 'Viewing Attendance %' = DIVIDE ( CALCULATE ( [Viewings Booked], fact_viewing[attended] = TRUE () ), [Viewings Booked] )
+			formatString: 0.0%
+			displayFolder: Operations\Lettings
+
+		/// Offers made in the period.
+		measure 'Offers Made' = COUNTROWS ( fact_offer )
+			formatString: #,0
+			displayFolder: Operations\Lettings
+
+		measure 'Accepted Offers' = CALCULATE ( [Offers Made], fact_offer[offer_status] = "Accepted" )
+			formatString: #,0
+			displayFolder: Operations\Lettings
+
+		measure 'Rejected Offers' = CALCULATE ( [Offers Made], fact_offer[offer_status] = "Rejected" )
+			formatString: #,0
+			displayFolder: Operations\Lettings
+
+		/// Offers ÷ viewings.
+		measure 'Viewing to Offer %' = DIVIDE ( [Offers Made], [Viewings Booked] )
+			formatString: 0.0%
+			displayFolder: Operations\Lettings
+
+		/// Accepted ÷ offers.
+		measure 'Offer to Let %' = DIVIDE ( [Accepted Offers], [Offers Made] )
+			formatString: 0.0%
+			displayFolder: Operations\Lettings
+
+		/// Applicants registered in Engage.
+		measure Applicants = CALCULATE ( COUNTROWS ( dim_applicant ), dim_applicant[applicant_key] <> -1 )
+			formatString: #,0
+			displayFolder: Operations\Lettings
+
+		measure 'Applicants Who Viewed' = DISTINCTCOUNT ( fact_viewing[applicant_key] )
+			formatString: #,0
+			displayFolder: Operations\Lettings
+
+		measure 'Applicants Who Offered' = DISTINCTCOUNT ( fact_offer[applicant_key] )
+			formatString: #,0
+			displayFolder: Operations\Lettings
+
+		/// Applicants still looking.
+		measure 'Active Applicants' = CALCULATE ( COUNTROWS ( dim_applicant ), dim_applicant[is_active_applicant] = TRUE () )
+			formatString: #,0
+			displayFolder: Operations\Lettings
+
+		/// Listings available today.
+		measure 'Available Homes' = CALCULATE ( COUNTROWS ( fact_lettings_funnel ), fact_lettings_funnel[is_available] = TRUE (), REMOVEFILTERS ( dim_date ) )
+			formatString: #,0
+			displayFolder: Operations\Lettings
+
+		/// Demand vs supply.
+		measure 'Applicants per Available Home' = DIVIDE ( [Active Applicants], [Available Homes] )
+			formatString: #,0.0
+			displayFolder: Operations\Lettings
+
+		/// One-line takeaway for the Lettings page.
+		measure 'Lettings Insight' =
+				"Homes take " & FORMAT ( [Avg Days to Move In], "0" ) & " days from listing to move-in; "
+				    & FORMAT ( [Viewing to Offer %], "0%" ) & " of viewings lead to an offer; "
+				    & FORMAT ( [Applicants per Available Home], "0.0" ) & " active applicants per available home."
+			displayFolder: Operations\Lettings
+
+		measure 'Avg Viewings per Listing' = AVERAGE ( fact_lettings_funnel[viewings] )
+			formatString: #,0.0
+			displayFolder: Operations\Lettings
+
+		measure 'Avg Attended Viewings per Listing' = AVERAGE ( fact_lettings_funnel[viewings_attended] )
+			formatString: #,0.0
+			displayFolder: Operations\Lettings
+
+		measure 'Avg Offers per Listing' = AVERAGE ( fact_lettings_funnel[offers] )
+			formatString: #,0.0
+			displayFolder: Operations\Lettings
+
+		measure 'Avg Lets per Listing' = AVERAGE ( fact_lettings_funnel[accepted_offers] )
+			formatString: 0.00
+			displayFolder: Operations\Lettings
